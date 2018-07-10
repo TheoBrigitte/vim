@@ -11,6 +11,11 @@ RUN_UPDATE=false
 main() {
 	parse_arguments $@
 
+	if [ -n "${PLUGIN}" ]; then
+		add_plugin
+		update_plugins
+		exit 0
+	fi
 
 	backup_vimrc
 	update_plugins
@@ -25,14 +30,17 @@ _printf() {
 }
 
 usage() {
-	printf "Usage: %s: [-u] [-q]\n
+	printf "Usage: %s: [-a] [-u] [-q]\n
+	-a	Add plugin
 	-u	Run plugins update
 	-s	Skip vim-go binaries installation\n" $0
 }
 
 parse_arguments() {
-	while getopts "su" name; do
+	while getopts "a:su" name; do
 		case $name in
+			a)	PLUGIN=${OPTARG}
+				RUN_UPDATE=true;;
 			s)	SKIP_VIMGO=true;;
 			u)	RUN_UPDATE=true;;
 			?)	usage
@@ -45,8 +53,13 @@ backup_vimrc() {
 	if [ -e ~/.vimrc ]; then
 		_printf "> backup ~/.vimrc"
 		mv -b ~/.vimrc ~/.vimrc_$(date +%F_%H-%M-%S)
-
 	fi
+}
+
+add_plugin() {
+	_printf "> add plugin: ${PLUGIN}"
+	echo "${PLUGIN}" >> plugins
+	sort -uo plugins plugins
 }
 
 update_plugins() {
