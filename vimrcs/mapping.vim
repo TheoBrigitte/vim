@@ -6,14 +6,14 @@ nmap <silent> <A-Down> :wincmd j<CR>
 nmap <silent> <A-Left> :wincmd h<CR>
 nmap <silent> <A-Right> :wincmd l<CR>
 
-map <C-k> :Ack 
-map <C-l> :TagbarToggle<CR>
-map <C-m> :GoRename<CR>
-map <C-n> :NERDTreeToggle<CR>
-map <C-_> :nohlsearch<CR>
-
-map <F2> :FZF --inline-info<CR>
-map <F3> :Ag 
-map <F4> :Tags<CR>
+map \b	:Buffers<CR>
+map \f	:FZF --inline-info<CR>
+map \t	:Tags<CR>
+map \p	:Ack 
+map \l	:TagbarToggle<CR>
+map \r	:GoRename<CR>
+map \n	:NERDTreeToggle<CR>
+map \m	:NERDTreeFind<CR>
+map \/	:nohlsearch<CR>
 
 map <F12> :qa!<CR>
