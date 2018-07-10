@@ -14,4 +14,4 @@ let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 
 " ack
-let g:ackprg = 'ag --vimgrep'
+let g:ackprg = 'rg --vimgrep'
