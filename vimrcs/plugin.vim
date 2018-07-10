@@ -1,9 +1,5 @@
 execute pathogen#infect()
 
-" CtrlP
-let g:ctrlp_cmd = 'CtrlPMixed'
-let g:ctrlp_extensions = ['tag']
-
 " fzf
 set runtimepath+=/usr/bin/fzf
 
