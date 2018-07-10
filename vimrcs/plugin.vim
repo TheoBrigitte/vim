@@ -26,3 +26,6 @@ let g:go_highlight_operators = 1
 
 " ack
 let g:ackprg = 'rg --vimgrep'
+
+" vim-gitgutter
+set updatetime=100
