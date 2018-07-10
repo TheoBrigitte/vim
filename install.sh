@@ -20,7 +20,6 @@ main() {
 
 	if [ -n "${ADD_PLUGIN}" ]; then
 		add_plugin ${ADD_PLUGIN}
-		update_plugins
 		exit 0
 	fi
 
@@ -47,8 +46,7 @@ usage() {
 parse_arguments() {
 	while getopts "a:r:su" name; do
 		case $name in
-			a)	ADD_PLUGIN=${OPTARG}
-				RUN_UPDATE=true;;
+			a)	ADD_PLUGIN=${OPTARG};;
 			r)	REMOVE_PLUGIN=${OPTARG};;
 			s)	SKIP_VIMGO=true;;
 			u)	RUN_UPDATE=true;;
@@ -66,14 +64,32 @@ backup_vimrc() {
 }
 
 add_plugin() {
-	_printf "> add plugin: ${1}"
-	echo "${1}" >> "${SCRIPT_DIR}/plugins"
+	local url="${1}"
+	_printf "> add plugin: ${url}"
+
+	_add_plugin "${url}"
+
+	echo "${url}" >> "${SCRIPT_DIR}/plugins"
 	sort -uo "${SCRIPT_DIR}/plugins" "${SCRIPT_DIR}/plugins"
 }
+
+_add_plugin() {
+	local url="${1}"
+	local name=$(basename ${1})
+
+	mkdir -p "${SCRIPT_DIR}/bundle/${name}"
+	curl -LSs \
+		"$url/archive/master.tar.gz" | \
+	tar xvz \
+		--strip=1 \
+		-C "${SCRIPT_DIR}/bundle/${name}"
+}
+
 
 remove_plugin() {
 	_printf "> remove plugin: ${1}"
 	sed -i "\%${1}%d" "${SCRIPT_DIR}/plugins"
+
 	local name=$(basename ${1})
 	rm -r "${SCRIPT_DIR}/bundle/${name}"
 }
@@ -82,15 +98,9 @@ update_plugins() {
 	if ! ${RUN_UPDATE}; then return 0; fi
 
 	_printf "> update plugins"
-	while read -r file; do
+	while read -r url; do
 		(
-			local name=$(basename $file)
-			mkdir -p "${SCRIPT_DIR}/bundle/${name}"
-			curl -LSs \
-				"$file/archive/master.tar.gz" | \
-			tar xvz \
-				--strip=1 \
-				-C "${SCRIPT_DIR}/bundle/${name}"
+			_add_plugin "${url}"
 		)
 	done < "${SCRIPT_DIR}/plugins"
 }
