@@ -7,6 +7,8 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 SKIP_VIMGO=false
 RUN_UPDATE=false
+ADD_PLUGIN=""
+REMOVE_PLUGIN=""
 
 main() {
 	parse_arguments $@
