@@ -77,12 +77,11 @@ _add_plugin() {
 	local url="${1}"
 	local name=$(basename ${1})
 
-	mkdir -p "${SCRIPT_DIR}/bundle/${name}"
-	curl -LSs \
-		"$url/archive/master.tar.gz" | \
-	tar xvz \
-		--strip=1 \
-		-C "${SCRIPT_DIR}/bundle/${name}"
+	if [ -d "${SCRIPT_DIR}/bundle/${name}" ]; then
+		rm -rf "${SCRIPT_DIR}/bundle/${name}"
+	fi
+	git clone --depth=1 --recurse-submodules "${url}" "${SCRIPT_DIR}/bundle/${name}"
+	rm -rf "${SCRIPT_DIR}/bundle/${name}/.git"
 }
 
 
