@@ -17,6 +17,7 @@ set smartindent
 
 set encoding=utf8
 set ffs=unix,dos,mac
+set list
 set listchars=tab:›\ ,trail:⋅
 
 set nobackup
