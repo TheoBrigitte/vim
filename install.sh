@@ -11,8 +11,13 @@ RUN_UPDATE=false
 main() {
 	parse_arguments $@
 
-	if [ -n "${PLUGIN}" ]; then
-		add_plugin
+	if [ -n "${REMOVE_PLUGIN}" ]; then
+		remove_plugin ${REMOVE_PLUGIN}
+		exit 0
+	fi
+
+	if [ -n "${ADD_PLUGIN}" ]; then
+		add_plugin ${ADD_PLUGIN}
 		update_plugins
 		exit 0
 	fi
@@ -30,17 +35,19 @@ _printf() {
 }
 
 usage() {
-	printf "Usage: %s: [-a] [-u] [-q]\n
+	printf "Usage: %s: [-a] [-r] [-s] [-u]\n
 	-a	Add plugin
-	-u	Run plugins update
-	-s	Skip vim-go binaries installation\n" $0
+	-r	Remove plugin
+	-s	Skip vim-go binaries installation
+	-u	Run plugins update\n" $0
 }
 
 parse_arguments() {
-	while getopts "a:su" name; do
+	while getopts "a:r:su" name; do
 		case $name in
-			a)	PLUGIN=${OPTARG}
+			a)	ADD_PLUGIN=${OPTARG}
 				RUN_UPDATE=true;;
+			r)	REMOVE_PLUGIN=${OPTARG};;
 			s)	SKIP_VIMGO=true;;
 			u)	RUN_UPDATE=true;;
 			?)	usage
@@ -57,9 +64,16 @@ backup_vimrc() {
 }
 
 add_plugin() {
-	_printf "> add plugin: ${PLUGIN}"
-	echo "${PLUGIN}" >> plugins
-	sort -uo plugins plugins
+	_printf "> add plugin: ${1}"
+	echo "${1}" >> "${SCRIPT_DIR}/plugins"
+	sort -uo "${SCRIPT_DIR}/plugins" "${SCRIPT_DIR}/plugins"
+}
+
+remove_plugin() {
+	_printf "> remove plugin: ${1}"
+	sed -i "\%${1}%d" "${SCRIPT_DIR}/plugins"
+	local name=$(basename ${1})
+	rm -r "${SCRIPT_DIR}/bundle/${name}"
 }
 
 update_plugins() {
