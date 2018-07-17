@@ -29,3 +29,7 @@ let g:ackprg = 'rg --vimgrep'
 
 " vim-gitgutter
 set updatetime=100
+
+" tmux
+let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_disable_when_zoomed = 1
