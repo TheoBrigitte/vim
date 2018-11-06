@@ -14,6 +14,7 @@ set showcmd
 
 set autoindent
 set smartindent
+filetype indent on
 
 set encoding=utf8
 set ffs=unix,dos,mac
