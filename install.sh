@@ -37,7 +37,7 @@ _printf() {
 
 usage() {
 	printf "Usage: %s: [-a] [-r] [-s] [-u]\n
-	-a	Add plugin
+	-a	Install (or update) plugin
 	-r	Remove plugin
 	-s	Skip vim-go binaries installation
 	-u	Run plugins update\n" $0
