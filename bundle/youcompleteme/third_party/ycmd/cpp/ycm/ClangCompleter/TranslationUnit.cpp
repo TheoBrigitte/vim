@@ -327,6 +327,18 @@ std::string TranslationUnit::GetTypeAtLocation(
     return "Internal error: cursor not valid";
   }
 
+  // Cursors on member functions return a rather unhelpful type text of
+  // "bound member function type".  To get a meaningful type, we must examine
+  // the referenced cursor.  We must be careful though, as both member variables
+  // and member functions are of kind MemberRefExpr, and getting the referenced
+  // cursor of a cv-qualified type discards the cv-qualification.
+  if ( clang_getCursorKind( cursor ) == CXCursor_MemberRefExpr ) {
+    CXCursor ref = clang_getCursorReferenced( cursor );
+    if ( clang_getCursorKind( ref ) == CXCursor_CXXMethod ) {
+      cursor = ref;
+    }
+  }
+
   CXType type = clang_getCursorType( cursor );
 
   std::string type_description =
@@ -542,10 +554,8 @@ std::vector< FixIt > TranslationUnit::GetFixItsForLocationInFile(
   return fixits;
 }
 
-DocumentationData TranslationUnit::GetDocsForLocationInFile(
-  const std::string &filename,
-  int line,
-  int column,
+DocumentationData TranslationUnit::GetDocsForLocation(
+  const Location &location,
   const std::vector< UnsavedFile > &unsaved_files,
   bool reparse ) {
 
@@ -559,46 +569,46 @@ DocumentationData TranslationUnit::GetDocsForLocationInFile(
     return DocumentationData();
   }
 
-  CXCursor cursor = GetCursor( filename, line, column );
+  CXCursor cursor = GetCursor( location.filename_,
+                               location.line_number_,
+                               location.column_number_ );
 
   if ( !CursorIsValid( cursor ) ) {
     return DocumentationData();
   }
 
-  // If the original cursor is a reference, then we return the documentation
-  // for the type/method/etc. that is referenced
-  CXCursor referenced_cursor = clang_getCursorReferenced( cursor );
+  return DocumentationData( cursor );
+}
 
-  if ( CursorIsValid( referenced_cursor ) ) {
-    cursor = referenced_cursor;
+bool TranslationUnit::LocationIsInSystemHeader( const Location &location ) {
+  unique_lock< mutex > lock( clang_access_mutex_ );
+
+  if ( !clang_translation_unit_ || !location.IsValid() ) {
+    return false;
   }
 
-  // We always want the documentation associated with the canonical declaration
-  CXCursor canonical_cursor = clang_getCanonicalCursor( cursor );
+  return clang_Location_isInSystemHeader(
+    GetSourceLocation( location.filename_,
+                       location.line_number_,
+                       location.column_number_ ) );
+}
 
-  if ( !CursorIsValid( canonical_cursor ) ) {
-    return DocumentationData();
-  }
+CXSourceLocation TranslationUnit::GetSourceLocation(
+  const std::string &filename,
+  int line,
+  int column ) {
 
-  return DocumentationData( canonical_cursor );
+  // ASSUMES A LOCK IS ALREADY HELD ON clang_access_mutex_ AND THE TU IS VALID!
+  CXFile file = clang_getFile( clang_translation_unit_, filename.c_str() );
+  return clang_getLocation( clang_translation_unit_, file, line, column );
 }
 
 CXCursor TranslationUnit::GetCursor( const std::string &filename,
                                      int line,
                                      int column ) {
-  // ASSUMES A LOCK IS ALREADY HELD ON clang_access_mutex_!
-  if ( !clang_translation_unit_ ) {
-    return clang_getNullCursor();
-  }
-
-  CXFile file = clang_getFile( clang_translation_unit_, filename.c_str() );
-  CXSourceLocation source_location = clang_getLocation(
-                                       clang_translation_unit_,
-                                       file,
-                                       line,
-                                       column );
-
-  return clang_getCursor( clang_translation_unit_, source_location );
+  // ASSUMES A LOCK IS ALREADY HELD ON clang_access_mutex_ AND THE TU IS VALID!
+  return clang_getCursor( clang_translation_unit_,
+                          GetSourceLocation( filename, line, column ) );
 }
 
 } // namespace YouCompleteMe

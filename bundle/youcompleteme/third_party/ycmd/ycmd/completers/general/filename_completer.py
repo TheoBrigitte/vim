@@ -1,5 +1,4 @@
-# Copyright (C) 2013 Stanislav Golovanov <stgolovanov@gmail.com>
-#                    Google Inc.
+# Copyright (C) 2013-2018 ycmd contributors
 #
 # This file is part of ycmd.
 #
@@ -33,10 +32,18 @@ from ycmd import responses
 
 FILE = 1
 DIR = 2
-# This mapping is also used for the #include completion.
-# We have option 3, because some entries could simultaneously be
-# both a file and a directory.
-EXTRA_INFO_MAP = { FILE : '[File]', DIR : '[Dir]', 3 : '[File&Dir]' }
+FRAMEWORK = 4
+# This mapping is also used for the #include completion. Entries can
+# simultaneously be a file, a directory, and/or a framework.
+EXTRA_INFO_MAP = {
+  FILE:      '[File]',
+  DIR:       '[Dir]',
+  3:         '[File&Dir]',
+  FRAMEWORK: '[Framework]',
+  5:         '[File&Framework]',
+  6:         '[Dir&Framework]',
+  7:         '[File&Dir&Framework]'
+}
 
 _logger = logging.getLogger( __name__ )
 
@@ -79,7 +86,17 @@ class FilenameCompleter( Completer ):
       """ % { 'sep': '/\\\\' if OnWindows() else '/' }, re.X )
 
 
+  def CurrentFiletypeCompletionDisabled( self, request_data ):
+    disabled_filetypes = self.user_options[ 'filepath_blacklist' ]
+    filetypes = request_data[ 'filetypes' ]
+    return ( '*' in disabled_filetypes or
+             any( x in disabled_filetypes for x in filetypes ) )
+
+
   def ShouldUseNowInner( self, request_data ):
+    if self.CurrentFiletypeCompletionDisabled( request_data ):
+      return False
+
     current_line = request_data[ 'line_value' ]
     start_codepoint = request_data[ 'start_codepoint' ]
 
@@ -113,7 +130,7 @@ class FilenameCompleter( Completer ):
         path_dir,
         self.user_options[ 'filepath_completion_use_working_dir' ],
         filepath,
-        working_dir) )
+        working_dir ) )
 
 
 def _GetAbsolutePathForCompletions( path_dir,
@@ -166,8 +183,12 @@ def _GetPathCompletionCandidates( path_dir, use_working_dir,
   return entries
 
 
-def GetPathType( path ):
-  return DIR if os.path.isdir( path ) else FILE
+def GetPathType( path, is_framework = False ):
+  if is_framework:
+    return FRAMEWORK
+  if os.path.isdir( path ):
+    return DIR
+  return FILE
 
 
 def GetPathTypeName( path_type ):

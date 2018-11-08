@@ -63,6 +63,7 @@ def ProjectPath( *args ):
                          *args )
 
 
+ProjectRoot = PathToTestFile( DEFAULT_PROJECT_DIR )
 InternalNonProjectFile = PathToTestFile( DEFAULT_PROJECT_DIR, 'test.java' )
 TestFactory = ProjectPath( 'TestFactory.java' )
 TestLauncher = ProjectPath( 'TestLauncher.java' )
@@ -74,6 +75,7 @@ youcompleteme_Test = PathToTestFile( DEFAULT_PROJECT_DIR,
                                      'Test.java' )
 
 DIAG_MATCHERS_PER_FILE = {
+  ProjectRoot: [],
   InternalNonProjectFile: [],
   TestFactory: contains_inanyorder(
     has_entries( {
@@ -159,7 +161,7 @@ DIAG_MATCHERS_PER_FILE = {
       'fixit_available': False
     } ),
   ),
-  TestLauncher: contains_inanyorder (
+  TestLauncher: contains_inanyorder(
     has_entries( {
       'kind': 'ERROR',
       'text': 'The type new TestLauncher.Launchable(){} must implement the '
@@ -391,11 +393,14 @@ public class Test {
   messages_for_filepath = []
 
   def PollForMessagesInAnotherThread( filepath, contents ):
-    for message in PollForMessages( app,
-                                    { 'filepath': filepath,
-                                      'contents': contents } ):
-      if 'filepath' in message and message[ 'filepath' ] == filepath:
-        messages_for_filepath.append( message )
+    try:
+      for message in PollForMessages( app,
+                                      { 'filepath': filepath,
+                                        'contents': contents } ):
+        if 'filepath' in message and message[ 'filepath' ] == filepath:
+          messages_for_filepath.append( message )
+    except PollForMessagesTimeoutException:
+      pass
 
   StartThread( PollForMessagesInAnotherThread, filepath, old_contents )
 
@@ -679,7 +684,7 @@ def OnBufferUnload_ServerNotRunning_test( app ):
                                filepath = filepath,
                                filetype = 'java' )
     result = app.post_json( '/event_notification', event_data ).json
-    assert_that( result, equal_to( {}  ) )
+    assert_that( result, equal_to( {} ) )
 
 
 @IsolatedYcmd

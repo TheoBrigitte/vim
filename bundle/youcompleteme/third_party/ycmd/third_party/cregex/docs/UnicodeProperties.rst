@@ -1,4 +1,4 @@
-The following is a list of the 87 properties which are supported by this module:
+The following is a list of the 94 properties which are supported by this module:
 
 Alphabetic [Alpha]
     No [F, False, N]
@@ -95,6 +95,7 @@ Block [blk]
     Cham
     Cherokee
     Cherokee_Supplement [Cherokee_Sup]
+    Chess_Symbols
     CJK_Compatibility [CJK_Compat]
     CJK_Compatibility_Forms [CJK_Compat_Forms]
     CJK_Compatibility_Ideographs [CJK_Compat_Ideographs]
@@ -132,6 +133,7 @@ Block [blk]
     Devanagari
     Devanagari_Extended [Devanagari_Ext]
     Dingbats
+    Dogra
     Domino_Tiles [Domino]
     Duployan
     Early_Dynastic_Cuneiform
@@ -150,6 +152,7 @@ Block [blk]
     Geometric_Shapes
     Geometric_Shapes_Extended [Geometric_Shapes_Ext]
     Georgian
+    Georgian_Extended [Georgian_Ext]
     Georgian_Supplement [Georgian_Sup]
     Glagolitic
     Glagolitic_Supplement [Glagolitic_Sup]
@@ -158,6 +161,7 @@ Block [blk]
     Greek_And_Coptic [Greek]
     Greek_Extended [Greek_Ext]
     Gujarati
+    Gunjala_Gondi
     Gurmukhi
     Halfwidth_And_Fullwidth_Forms [Half_And_Full_Forms]
     Hangul_Compatibility_Jamo [Compat_Jamo]
@@ -165,6 +169,7 @@ Block [blk]
     Hangul_Jamo_Extended_A [Jamo_Ext_A]
     Hangul_Jamo_Extended_B [Jamo_Ext_B]
     Hangul_Syllables [Hangul]
+    Hanifi_Rohingya
     Hanunoo
     Hatran
     Hebrew
@@ -174,6 +179,7 @@ Block [blk]
     Ideographic_Description_Characters [IDC]
     Ideographic_Symbols_And_Punctuation [Ideographic_Symbols]
     Imperial_Aramaic
+    Indic_Siyaq_Numbers
     Inscriptional_Pahlavi
     Inscriptional_Parthian
     IPA_Extensions [IPA_Ext]
@@ -212,6 +218,7 @@ Block [blk]
     Lydian
     Mahajani
     Mahjong_Tiles [Mahjong]
+    Makasar
     Malayalam
     Mandaic
     Manichaean
@@ -219,6 +226,8 @@ Block [blk]
     Masaram_Gondi
     Mathematical_Alphanumeric_Symbols [Math_Alphanum]
     Mathematical_Operators [Math_Operators]
+    Mayan_Numerals
+    Medefaidrin
     Meetei_Mayek
     Meetei_Mayek_Extensions [Meetei_Mayek_Ext]
     Mende_Kikakui
@@ -254,6 +263,7 @@ Block [blk]
     Old_North_Arabian
     Old_Permic
     Old_Persian
+    Old_Sogdian
     Old_South_Arabian
     Old_Turkic
     Ol_Chiki
@@ -285,6 +295,7 @@ Block [blk]
     Sinhala
     Sinhala_Archaic_Numbers
     Small_Form_Variants [Small_Forms]
+    Sogdian
     Sora_Sompeng
     Soyombo
     Spacing_Modifier_Letters [Modifier_Letters]
@@ -467,6 +478,30 @@ East_Asian_Width [ea]
     Neutral [N]
     Wide [W]
 
+Emoji
+    No
+    Yes
+
+Emoji_Component
+    No
+    Yes
+
+Emoji_Modifier
+    No
+    Yes
+
+Emoji_Modifier_Base
+    No
+    Yes
+
+Emoji_Presentation
+    No
+    Yes
+
+Extended_Pictographic
+    No
+    Yes
+
 Extender [Ext]
     No [F, False, N]
     Yes [T, True, Y]
@@ -610,6 +645,7 @@ Indic_Syllabic_Category [InSC]
     Consonant_Dead
     Consonant_Final
     Consonant_Head_Letter
+    Consonant_Initial_Postfixed
     Consonant_Killer
     Consonant_Medial
     Consonant_Placeholder
@@ -659,6 +695,8 @@ Joining_Group [jg]
     Gamal
     Hah
     Hamza_On_Heh_Goal [Teh_Marbuta_Goal]
+    Hanifi_Rohingya_Kinna_Ya
+    Hanifi_Rohingya_Pa
     He
     Heh
     Heh_Goal
@@ -861,6 +899,7 @@ Numeric_Value [nv]
     10000
     100000
     1000000
+    10000000
     100000000
     10000000000
     1000000000000
@@ -886,6 +925,7 @@ Numeric_Value [nv]
     2000
     20000
     200000
+    20000000
     21
     216000
     22
@@ -1082,6 +1122,7 @@ Script [sc]
     Cyrillic [Cyrl]
     Deseret [Dsrt]
     Devanagari [Deva]
+    Dogra [Dogr]
     Duployan [Dupl]
     Egyptian_Hieroglyphs [Egyp]
     Elbasan [Elba]
@@ -1092,9 +1133,11 @@ Script [sc]
     Grantha [Gran]
     Greek [Grek]
     Gujarati [Gujr]
+    Gunjala_Gondi [Gong]
     Gurmukhi [Guru]
     Han [Hani]
     Hangul [Hang]
+    Hanifi_Rohingya [Rohg]
     Hanunoo [Hano]
     Hatran [Hatr]
     Hebrew [Hebr]
@@ -1123,11 +1166,13 @@ Script [sc]
     Lycian [Lyci]
     Lydian [Lydi]
     Mahajani [Mahj]
+    Makasar [Maka]
     Malayalam [Mlym]
     Mandaic [Mand]
     Manichaean [Mani]
     Marchen [Marc]
     Masaram_Gondi [Gonm]
+    Medefaidrin [Medf]
     Meetei_Mayek [Mtei]
     Mende_Kikakui [Mend]
     Meroitic_Cursive [Merc]
@@ -1149,6 +1194,7 @@ Script [sc]
     Old_North_Arabian [Narb]
     Old_Permic [Perm]
     Old_Persian [Xpeo]
+    Old_Sogdian [Sogo]
     Old_South_Arabian [Sarb]
     Old_Turkic [Orkh]
     Ol_Chiki [Olck]
@@ -1170,6 +1216,202 @@ Script [sc]
     Siddham [Sidd]
     SignWriting [Sgnw]
     Sinhala [Sinh]
+    Sogdian [Sogd]
+    Sora_Sompeng [Sora]
+    Soyombo [Soyo]
+    Sundanese [Sund]
+    Syloti_Nagri [Sylo]
+    Syriac [Syrc]
+    Tagalog [Tglg]
+    Tagbanwa [Tagb]
+    Tai_Le [Tale]
+    Tai_Tham [Lana]
+    Tai_Viet [Tavt]
+    Takri [Takr]
+    Tamil [Taml]
+    Tangut [Tang]
+    Telugu [Telu]
+    Thaana [Thaa]
+    Thai
+    Tibetan [Tibt]
+    Tifinagh [Tfng]
+    Tirhuta [Tirh]
+    Ugaritic [Ugar]
+    Unknown [Zzzz]
+    Vai [Vaii]
+    Warang_Citi [Wara]
+    Yi [Yiii]
+    Zanabazar_Square [Zanb]
+
+Script_Extensions [scx]
+    Adlam [Adlm]
+    Adlm Arab Mand Mani Phlp Rohg Sogd Syrc
+    Ahom
+    Anatolian_Hieroglyphs [Hluw]
+    Arab Copt
+    Arab Rohg
+    Arab Rohg Syrc Thaa
+    Arab Syrc
+    Arab Syrc Thaa
+    Arab Thaa
+    Arabic [Arab]
+    Armenian [Armn]
+    Armn Geor
+    Avestan [Avst]
+    Balinese [Bali]
+    Bamum [Bamu]
+    Bassa_Vah [Bass]
+    Batak [Batk]
+    Beng Cakm Sylo
+    Beng Deva
+    Beng Deva Dogr Gong Gran Gujr Guru Knda Limb Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh
+    Beng Deva Dogr Gong Gran Gujr Guru Knda Mahj Mlym Orya Sind Sinh Sylo Takr Taml Telu Tirh
+    Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Shrd Taml Telu Tirh
+    Beng Deva Gran Gujr Guru Knda Latn Mlym Orya Taml Telu Tirh
+    Beng Deva Gran Knda
+    Bengali [Beng]
+    Bhaiksuki [Bhks]
+    Bopo Hang Hani Hira Kana
+    Bopo Hang Hani Hira Kana Yiii
+    Bopo Hani
+    Bopomofo [Bopo]
+    Brahmi [Brah]
+    Braille [Brai]
+    Bugi Java
+    Buginese [Bugi]
+    Buhd Hano Tagb Tglg
+    Buhid [Buhd]
+    Cakm Mymr Tale
+    Canadian_Aboriginal [Cans]
+    Carian [Cari]
+    Caucasian_Albanian [Aghb]
+    Chakma [Cakm]
+    Cham
+    Cherokee [Cher]
+    Common [Zyyy]
+    Coptic [Copt, Qaac]
+    Cprt Lina Linb
+    Cprt Linb
+    Cuneiform [Xsux]
+    Cypriot [Cprt]
+    Cyrillic [Cyrl]
+    Cyrl Glag
+    Cyrl Latn
+    Cyrl Perm
+    Deseret [Dsrt]
+    Deva Dogr Gujr Guru Khoj Knda Kthi Mahj Mlym Modi Sind Takr Tirh
+    Deva Dogr Gujr Guru Khoj Knda Kthi Mahj Modi Sind Takr Tirh
+    Deva Dogr Gujr Guru Khoj Kthi Mahj Modi Sind Takr Tirh
+    Deva Dogr Kthi Mahj
+    Deva Gran
+    Deva Gran Knda
+    Deva Gran Latn
+    Deva Knda Mlym Orya Taml Telu
+    Deva Shrd
+    Deva Taml
+    Devanagari [Deva]
+    Dogra [Dogr]
+    Duployan [Dupl]
+    Egyptian_Hieroglyphs [Egyp]
+    Elbasan [Elba]
+    Ethiopic [Ethi]
+    Geor Latn
+    Georgian [Geor]
+    Glagolitic [Glag]
+    Gothic [Goth]
+    Gran Taml
+    Grantha [Gran]
+    Greek [Grek]
+    Gujarati [Gujr]
+    Gujr Khoj
+    Gunjala_Gondi [Gong]
+    Gurmukhi [Guru]
+    Guru Mult
+    Han [Hani]
+    Hangul [Hang]
+    Hani Hira Kana
+    Hanifi_Rohingya [Rohg]
+    Hanunoo [Hano]
+    Hatran [Hatr]
+    Hebrew [Hebr]
+    Hira Kana
+    Hiragana [Hira]
+    Imperial_Aramaic [Armi]
+    Inherited [Qaai, Zinh]
+    Inscriptional_Pahlavi [Phli]
+    Inscriptional_Parthian [Prti]
+    Javanese [Java]
+    Kaithi [Kthi]
+    Kali Latn Mymr
+    Kannada [Knda]
+    Katakana [Kana]
+    Kayah_Li [Kali]
+    Kharoshthi [Khar]
+    Khmer [Khmr]
+    Khojki [Khoj]
+    Khudawadi [Sind]
+    Lao [Laoo]
+    Latin [Latn]
+    Lepcha [Lepc]
+    Limbu [Limb]
+    Linear_A [Lina]
+    Linear_B [Linb]
+    Lisu
+    Lycian [Lyci]
+    Lydian [Lydi]
+    Mahajani [Mahj]
+    Makasar [Maka]
+    Malayalam [Mlym]
+    Mandaic [Mand]
+    Manichaean [Mani]
+    Marchen [Marc]
+    Masaram_Gondi [Gonm]
+    Medefaidrin [Medf]
+    Meetei_Mayek [Mtei]
+    Mende_Kikakui [Mend]
+    Meroitic_Cursive [Merc]
+    Meroitic_Hieroglyphs [Mero]
+    Miao [Plrd]
+    Modi
+    Mong Phag
+    Mongolian [Mong]
+    Mro [Mroo]
+    Multani [Mult]
+    Myanmar [Mymr]
+    Nabataean [Nbat]
+    Newa
+    New_Tai_Lue [Talu]
+    Nko [Nkoo]
+    Nushu [Nshu]
+    Ogham [Ogam]
+    Old_Hungarian [Hung]
+    Old_Italic [Ital]
+    Old_North_Arabian [Narb]
+    Old_Permic [Perm]
+    Old_Persian [Xpeo]
+    Old_Sogdian [Sogo]
+    Old_South_Arabian [Sarb]
+    Old_Turkic [Orkh]
+    Ol_Chiki [Olck]
+    Oriya [Orya]
+    Osage [Osge]
+    Osmanya [Osma]
+    Pahawh_Hmong [Hmng]
+    Palmyrene [Palm]
+    Pau_Cin_Hau [Pauc]
+    Phags_Pa [Phag]
+    Phoenician [Phnx]
+    Psalter_Pahlavi [Phlp]
+    Rejang [Rjng]
+    Runic [Runr]
+    Samaritan [Samr]
+    Saurashtra [Saur]
+    Sharada [Shrd]
+    Shavian [Shaw]
+    Siddham [Sidd]
+    SignWriting [Sgnw]
+    Sinhala [Sinh]
+    Sogdian [Sogd]
     Sora_Sompeng [Sora]
     Soyombo [Soyo]
     Sundanese [Sund]
@@ -1267,6 +1509,7 @@ Word_Break [WB]
     Other [XX]
     Regional_Indicator [RI]
     Single_Quote [SQ]
+    WSegSpace
     ZWJ
 
 XDigit

@@ -29,7 +29,10 @@ import json
 
 
 from ycmd.utils import ToUnicode
-from ycmd.tests.test_utils import ClearCompletionsCache, IsolatedApp, SetUpApp
+from ycmd.tests.test_utils import ( ClearCompletionsCache,
+                                    IsolatedApp,
+                                    SetUpApp,
+                                    YCMD_EXTRA_CONF )
 
 shared_app = None
 
@@ -85,6 +88,8 @@ def IsolatedYcmd( custom_options = {} ):
     @functools.wraps( test )
     def Wrapper( *args, **kwargs ):
       with IsolatedApp( custom_options ) as app:
+        app.post_json( '/ignore_extra_conf_file',
+                       { 'filepath': YCMD_EXTRA_CONF } )
         test( app, *args, **kwargs )
     return Wrapper
   return Decorator
@@ -121,3 +126,31 @@ def TemporaryClangProject( tmp_dir, compile_commands ):
     yield
   finally:
     os.remove( path )
+
+
+# A mock of ycm_core.ClangCompleter with translation units still being parsed.
+class MockCoreClangCompleter( object ):
+
+  def GetDefinitionLocation( self, *args ):
+    pass
+
+  def GetDeclarationLocation( self, *args ):
+    pass
+
+  def GetDefinitionOrDeclarationLocation( self, *args ):
+    pass
+
+  def GetTypeAtLocation( self, *args ):
+    pass
+
+  def GetEnclosingFunctionAtLocation( self, *args ):
+    pass
+
+  def GetDocsForLocationInFile( self, *args ):
+    pass
+
+  def GetFixItsForLocationInFile( self, *args ):
+    pass
+
+  def UpdatingTranslationUnit( self, filename ):
+    return True

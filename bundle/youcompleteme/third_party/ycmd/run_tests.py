@@ -9,6 +9,7 @@ from __future__ import absolute_import
 # Not installing aliases from python-future; it's unreliable and slow.
 from builtins import *  # noqa
 
+import argparse
 import platform
 import os
 import subprocess
@@ -38,10 +39,6 @@ if os.environ.get( 'PYTHONPATH' ) is not None:
   python_path.append( os.environ['PYTHONPATH'] )
 os.environ[ 'PYTHONPATH' ] = os.pathsep.join( python_path )
 
-sys.path.insert( 1, p.abspath( p.join( DIR_OF_THIRD_PARTY, 'argparse' ) ) )
-
-import argparse
-
 
 def RunFlake8():
   print( 'Running flake8' )
@@ -63,7 +60,8 @@ COMPLETERS = {
   },
   'javascript': {
     'build': [ '--js-completer' ],
-    'test': [ '--exclude-dir=ycmd/tests/javascript' ],
+    'test': [ '--exclude-dir=ycmd/tests/javascript',
+              '--exclude-dir=ycmd/tests/tern' ],
     'aliases': [ 'js', 'tern' ]
   },
   'go': {
@@ -174,11 +172,10 @@ def BuildYcmdLibs( args ):
     else:
       os.environ[ 'EXTRA_CMAKE_ARGS' ] = '-DUSE_DEV_FLAGS=ON'
 
-    os.environ[ 'YCM_TESTRUN' ] = '1'
-
     build_cmd = [
       sys.executable,
       p.join( DIR_OF_THIS_SCRIPT, 'build.py' ),
+      '--core-tests',
       '--quiet',
     ]
 

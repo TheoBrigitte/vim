@@ -29,7 +29,8 @@ from hamcrest import ( assert_that,
                        contains_inanyorder,
                        empty,
                        has_entries,
-                       instance_of )
+                       instance_of,
+                       matches_regexp )
 from nose.tools import eq_
 from pprint import pformat
 import requests
@@ -41,7 +42,9 @@ from ycmd.tests.java import ( DEFAULT_PROJECT_DIR,
                               SharedYcmd )
 from ycmd.tests.test_utils import ( BuildRequest,
                                     ChunkMatcher,
+                                    CombineRequest,
                                     ErrorMatcher,
+                                    ExpectedFailure,
                                     LocationMatcher,
                                     WithRetry )
 from mock import patch
@@ -119,15 +122,9 @@ def RunTest( app, test, contents = None ):
   if not contents:
     contents = ReadFile( test[ 'request' ][ 'filepath' ] )
 
-  def CombineRequest( request, data ):
-    kw = request
-    request.update( data )
-    return BuildRequest( **kw )
-
   # Because we aren't testing this command, we *always* ignore errors. This
   # is mainly because we (may) want to test scenarios where the completer
-  # throws an exception and the easiest way to do that is to throw from
-  # within the FlagsForFile function.
+  # throws an exception.
   app.post_json( '/event_notification',
                  CombineRequest( test[ 'request' ], {
                                  'event_name': 'FileReadyToParse',
@@ -622,6 +619,9 @@ def Subcommands_RefactorRename_Simple_test( app ):
   } )
 
 
+@ExpectedFailure( 'Renaming does not work on overridden methods '
+                  'since jdt.ls 0.21.0',
+                  matches_regexp( 'No item matched:.*TestWidgetImpl.java' ) )
 @WithRetry
 @SharedYcmd
 def Subcommands_RefactorRename_MultipleFiles_test( app ):
@@ -650,7 +650,7 @@ def Subcommands_RefactorRename_MultipleFiles_test( app ):
     'description': 'RefactorRename works across files',
     'request': {
       'command': 'RefactorRename',
-      'arguments': [ 'a-quite-long-string' ],
+      'arguments': [ 'a_quite_long_string' ],
       'filepath': TestLauncher,
       'line_num': 32,
       'column_num': 13,
@@ -661,19 +661,19 @@ def Subcommands_RefactorRename_MultipleFiles_test( app ):
         'fixits': contains( has_entries( {
           'chunks': contains(
             ChunkMatcher(
-              'a-quite-long-string',
+              'a_quite_long_string',
               LocationMatcher( AbstractTestWidget, 10, 15 ),
               LocationMatcher( AbstractTestWidget, 10, 39 ) ),
             ChunkMatcher(
-              'a-quite-long-string',
+              'a_quite_long_string',
               LocationMatcher( TestFactory, 28, 9 ),
               LocationMatcher( TestFactory, 28, 33 ) ),
             ChunkMatcher(
-              'a-quite-long-string',
+              'a_quite_long_string',
               LocationMatcher( TestLauncher, 32, 11 ),
               LocationMatcher( TestLauncher, 32, 35 ) ),
             ChunkMatcher(
-              'a-quite-long-string',
+              'a_quite_long_string',
               LocationMatcher( TestWidgetImpl, 20, 15 ),
               LocationMatcher( TestWidgetImpl, 20, 39 ) ),
           ),
@@ -805,7 +805,7 @@ def Subcommands_FixIt_SingleDiag_MultipleOption_Insertion_test():
       } ),
       has_entries( {
         'text': "Create field 'Wibble'",
-        'chunks': contains (
+        'chunks': contains(
           ChunkMatcher( '\n\n',
                         LocationMatcher( filepath, 16, 4 ),
                         LocationMatcher( filepath, 16, 4 ) ),
@@ -816,7 +816,7 @@ def Subcommands_FixIt_SingleDiag_MultipleOption_Insertion_test():
       } ),
       has_entries( {
         'text': "Create constant 'Wibble'",
-        'chunks': contains (
+        'chunks': contains(
           ChunkMatcher( '\n\n',
                         LocationMatcher( filepath, 16, 4 ),
                         LocationMatcher( filepath, 16, 4 ) ),
@@ -827,7 +827,7 @@ def Subcommands_FixIt_SingleDiag_MultipleOption_Insertion_test():
       } ),
       has_entries( {
         'text': "Create parameter 'Wibble'",
-        'chunks': contains (
+        'chunks': contains(
           ChunkMatcher( ', ',
                         LocationMatcher( filepath, 18, 32 ),
                         LocationMatcher( filepath, 18, 32 ) ),
@@ -838,7 +838,7 @@ def Subcommands_FixIt_SingleDiag_MultipleOption_Insertion_test():
       } ),
       has_entries( {
         'text': "Create local variable 'Wibble'",
-        'chunks': contains (
+        'chunks': contains(
           ChunkMatcher( 'Object Wibble;',
                         LocationMatcher( filepath, 19, 5 ),
                         LocationMatcher( filepath, 19, 5 ) ),
@@ -1577,8 +1577,8 @@ def Subcommands_RequestFailed_test( app ):
                          bytes( b'textDocument/codeFAILED' ) )
 
     with connection._stdin_lock:
-       connection._server_stdin.write( junk )
-       connection._server_stdin.flush()
+      connection._server_stdin.write( junk )
+      connection._server_stdin.flush()
 
 
   with patch.object( connection, 'WriteData', side_effect = WriteJunkToServer ):

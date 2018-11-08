@@ -60,6 +60,13 @@ ITEM_KIND = [
   'Color',
   'File',
   'Reference',
+  'Folder',
+  'EnumMember',
+  'Constant',
+  'Struct',
+  'Event',
+  'Operator',
+  'TypeParameter',
 ]
 
 SEVERITY = [
@@ -196,8 +203,14 @@ def Initialize( request_id, project_directory ):
       # We don't currently support any server-specific options.
     },
     'capabilities': {
-      # We don't currently support any of the client capabilities, so we don't
-      # include anything in here.
+      'textDocument': {
+        'completion': {
+          'completionItemKind': {
+            # ITEM_KIND list is 1-based.
+            'valueSet': list( range( 1, len( ITEM_KIND ) + 1 ) ),
+          }
+        }
+      }
     },
   } )
 
@@ -395,7 +408,7 @@ def FilePathToUri( file_name ):
 
 
 def UriToFilePath( uri ):
-  if uri [ : 5 ] != "file:":
+  if uri[ : 5 ] != "file:":
     raise InvalidUriException( uri )
 
   return os.path.abspath( url2pathname( uri[ 5 : ] ) )
@@ -408,7 +421,7 @@ def _BuildMessageData( message ):
   # JSON/YAML parser.
   data = ToBytes( json.dumps( message, sort_keys=True ) )
   packet = ToBytes( 'Content-Length: {0}\r\n'
-                    '\r\n'.format( len(data) ) ) + data
+                    '\r\n'.format( len( data ) ) ) + data
   return packet
 
 

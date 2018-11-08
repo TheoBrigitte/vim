@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Copyright (C) 2016  ycmd contributors.
+# Copyright (C) 2016-2018 ycmd contributors.
 #
 # This file is part of ycmd.
 #
@@ -203,7 +203,7 @@ def JoinLinesAsUnicode_Str_test():
 
 
 def JoinLinesAsUnicode_EmptyList_test():
-  value = utils.JoinLinesAsUnicode( [ ] )
+  value = utils.JoinLinesAsUnicode( [] )
   eq_( value, u'' )
   ok_( isinstance( value, str ) )
 
@@ -407,6 +407,41 @@ def PathsToAllParentFolders_WindowsPath_test():
   ], list( utils.PathsToAllParentFolders( r'C:\\foo\\goo\\zoo\\test.c' ) ) )
 
 
+def PathLeftSplit_test():
+  # Tuples of ( path, expected_result ) for utils.PathLeftSplit.
+  tests = [
+    ( '',              ( '', '' ) ),
+    ( 'foo',           ( 'foo', '' ) ),
+    ( 'foo/bar',       ( 'foo', 'bar' ) ),
+    ( 'foo/bar/xyz',   ( 'foo', 'bar/xyz' ) ),
+    ( 'foo/bar/xyz/',  ( 'foo', 'bar/xyz' ) ),
+    ( '/',             ( '/', '' ) ),
+    ( '/foo',          ( '/', 'foo' ) ),
+    ( '/foo/bar',      ( '/', 'foo/bar' ) ),
+    ( '/foo/bar/xyz',  ( '/', 'foo/bar/xyz' ) ),
+    ( '/foo/bar/xyz/', ( '/', 'foo/bar/xyz' ) )
+  ]
+  for test in tests:
+    yield lambda test: eq_( utils.PathLeftSplit( test[ 0 ] ), test[ 1 ] ), test
+
+
+@WindowsOnly
+def PathLeftSplit_Windows_test():
+  # Tuples of ( path, expected_result ) for utils.PathLeftSplit.
+  tests = [
+    ( 'foo\\bar',            ( 'foo', 'bar' ) ),
+    ( 'foo\\bar\\xyz',       ( 'foo', 'bar\\xyz' ) ),
+    ( 'foo\\bar\\xyz\\',     ( 'foo', 'bar\\xyz' ) ),
+    ( 'C:\\',                ( 'C:\\', '' ) ),
+    ( 'C:\\foo',             ( 'C:\\', 'foo' ) ),
+    ( 'C:\\foo\\bar',        ( 'C:\\', 'foo\\bar' ) ),
+    ( 'C:\\foo\\bar\\xyz',   ( 'C:\\', 'foo\\bar\\xyz' ) ),
+    ( 'C:\\foo\\bar\\xyz\\', ( 'C:\\', 'foo\\bar\\xyz' ) )
+  ]
+  for test in tests:
+    yield lambda test: eq_( utils.PathLeftSplit( test[ 0 ] ), test[ 1 ] ), test
+
+
 def OpenForStdHandle_PrintDoesntThrowException_test():
   try:
     temp = PathToTestFile( 'open-for-std-handle' )
@@ -588,9 +623,9 @@ def GetCurrentDirectory_Py3NoCurrentDirectory_test():
 def HashableDict_Equality_test():
   dict1 = { 'key': 'value' }
   dict2 = { 'key': 'another_value' }
-  ok_(     utils.HashableDict( dict1 ) == utils.HashableDict( dict1 ) )
+  ok_( utils.HashableDict( dict1 ) == utils.HashableDict( dict1 ) )
   ok_( not utils.HashableDict( dict1 ) != utils.HashableDict( dict1 ) )
   ok_( not utils.HashableDict( dict1 ) == dict1 )
-  ok_(     utils.HashableDict( dict1 ) != dict1 )
+  ok_( utils.HashableDict( dict1 ) != dict1 )
   ok_( not utils.HashableDict( dict1 ) == utils.HashableDict( dict2 ) )
-  ok_(     utils.HashableDict( dict1 ) != utils.HashableDict( dict2 ) )
+  ok_( utils.HashableDict( dict1 ) != utils.HashableDict( dict2 ) )
