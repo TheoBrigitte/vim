@@ -32,3 +32,5 @@ set clipboard=unamed
 
 set splitright
 set splitbelow
+
+set viminfo+=n~/.vim/viminfo
