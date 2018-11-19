@@ -34,3 +34,6 @@ set splitright
 set splitbelow
 
 set viminfo+=n~/.vim/viminfo
+
+set foldmethod=syntax
+set foldlevelstart=99
