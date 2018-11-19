@@ -24,4 +24,4 @@ map \m  :NERDTreeFind<CR>
 map \\  :nohlsearch<CR>
 map \x  :bd<CR>
 
-map <F12> :qa!<CR>
+map Z :qa!<CR>
