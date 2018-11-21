@@ -28,7 +28,7 @@ set noswapfile
 
 set backspace=eol,start,indent
 
-set clipboard=unamed
+"set clipboard=unnamedplus
 
 set splitright
 set splitbelow
