@@ -129,7 +129,7 @@ plugin_update() {
 	update_plugins
 	update_pathogen
 	if ! ${SKIP}; then
-		update_vimgo
+		update_extra
 	fi
 	update_plugins_file
 }
@@ -155,9 +155,9 @@ update_pathogen() {
 	vim +Helptags +qall
 }
 
-update_vimgo() {
-	_printf "> update vim-go binaries"
-	vim +GoUpdateBinaries +qall
+update_extra() {
+	_printf "> update extra commands"
+	"${SCRIPT_DIR}/update.sh"
 }
 
 update_plugins_file() {
