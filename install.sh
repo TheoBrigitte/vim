@@ -5,29 +5,26 @@ set -eu
 PATHOGEN_URL="https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim"
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-SKIP_VIMGO=false
-RUN_UPDATE=false
-ADD_PLUGIN=""
-REMOVE_PLUGIN=""
+LIST=false
+PLUGIN_ADD=""
+PLUGIN_REMOVE=""
+SKIP=false
+UPDATE=false
 
 main() {
 	parse_arguments $@
 
-	if [ -n "${REMOVE_PLUGIN}" ]; then
-		remove_plugin ${REMOVE_PLUGIN}
-		exit 0
+	if [ -n "${PLUGIN_REMOVE}" ]; then
+		plugin_remove "${PLUGIN_REMOVE}"
+	elif [ -n "${PLUGIN_ADD}" ]; then
+		plugin_add "${PLUGIN_ADD}"
+	elif ${UPDATE}; then
+		plugin_update
+	elif ${LIST}; then
+		plugin_list
+	else
+		vimrc_backup
 	fi
-
-	if [ -n "${ADD_PLUGIN}" ]; then
-		add_plugin ${ADD_PLUGIN}
-		exit 0
-	fi
-
-	backup_vimrc
-	update_plugins
-	update_pathogen
-	update_vimgo
-	_printf "> vim configuration installed"
 }
 
 _printf() {
@@ -36,90 +33,146 @@ _printf() {
 }
 
 usage() {
-	printf "Usage: %s: [-a] [-r] [-s] [-u]\n
-	-a	Install (or update) plugin
-	-r	Remove plugin
-	-s	Skip vim-go binaries installation
-	-u	Run plugins update\n" $0
+	printf "Usage: %s [ACTION]
+
+vim configuration manager
+
+	<no action>	Install vim configuration
+	-a <url>	Install (or update) a plugin
+	-h		Print this help
+	-l		List installed plugins
+	-r <url>	Remove a plugin
+	-u		Update all plugins
+	-s		Skip vim-go binaries installation
+
+<url>	github user/repo format
+" $(basename $0)
 }
 
 parse_arguments() {
-	while getopts "a:r:su" name; do
+	while getopts "a:hlr:su" name; do
 		case $name in
-			a)	ADD_PLUGIN=${OPTARG};;
-			r)	REMOVE_PLUGIN=${OPTARG};;
-			s)	SKIP_VIMGO=true;;
-			u)	RUN_UPDATE=true;;
-			?)	usage
-				exit 2;;
+			a)	PLUGIN_ADD=${OPTARG};;
+			l)	LIST=true;;
+			r)	PLUGIN_REMOVE=${OPTARG};;
+			s)	SKIP=true;;
+			u)	UPDATE=true;;
+			h|?)	usage
+				exit 0;;
 		esac
 	done
 }
 
-backup_vimrc() {
+vimrc_backup() {
 	if [ -e ~/.vimrc ]; then
-		_printf "> backup ~/.vimrc"
-		mv -b ~/.vimrc ~/.vimrc_$(date +%F_%H-%M-%S)
+		_printf "> backup vimrc"
+		(
+			set -e
+			date="$(date +%F_%H-%M-%S)"
+			set -x
+			mv -b ~/.vimrc ~/.vimrc_${date}
+		)
 	fi
+	_printf "> vim configuration installed"
+}
+
+plugin_add() {
+	local name=$(url_clean "${1}")
+	_printf "> add plugin: ${name}"
+
+	add_plugin "${name}"
+
+	echo "${name}" >> "${SCRIPT_DIR}/plugins"
+	update_plugins_file
 }
 
 add_plugin() {
-	local url="${1}"
-	_printf "> add plugin: ${url}"
+	local url=$(url_format "${1}")
+	local path=$(basename ${1})
 
-	_add_plugin "${url}"
-
-	echo "${url}" >> "${SCRIPT_DIR}/plugins"
-	sort -uo "${SCRIPT_DIR}/plugins" "${SCRIPT_DIR}/plugins"
-}
-
-_add_plugin() {
-	local url="${1}"
-	local name=$(basename ${1})
-
-	if [ -d "${SCRIPT_DIR}/bundle/${name}" ]; then
-		rm -rf "${SCRIPT_DIR}/bundle/${name}"
+	if [ -d "${SCRIPT_DIR}/bundle/${path}" ]; then
+		rm -rf "${SCRIPT_DIR}/bundle/${path}"
 	fi
-	git clone --depth=1 --recurse-submodules "${url}" "${SCRIPT_DIR}/bundle/${name}"
-	rm -rf "${SCRIPT_DIR}/bundle/${name}/.git"
+	(
+		set -ex
+		git clone --quiet --depth=1 --recurse-submodules "${url}" "${SCRIPT_DIR}/bundle/${path}" 1> /dev/null
+	)
+	rm -rf "${SCRIPT_DIR}/bundle/${path}/.git"
 }
 
-
-remove_plugin() {
-	_printf "> remove plugin: ${1}"
-	sed -i "\%${1}%d" "${SCRIPT_DIR}/plugins"
-
-	local name=$(basename ${1})
-	rm -r "${SCRIPT_DIR}/bundle/${name}"
-}
-
-update_plugins() {
-	if ! ${RUN_UPDATE}; then return 0; fi
-
-	_printf "> update plugins"
-	while read -r url; do
-		(
-			_add_plugin "${url}"
-		)
+plugin_list() {
+	while read -r name; do
+		local path=$(basename ${name})
+		local state=""
+		if [ -d "${SCRIPT_DIR}/bundle/${path}" ]; then
+			state="[installed]"
+		else
+			state="[missing]"
+		fi
+		printf "%-35s  %15s\n" "${name}" "${state}"
 	done < "${SCRIPT_DIR}/plugins"
 }
 
-update_pathogen() {
-	if ! ${RUN_UPDATE}; then return 0; fi
+plugin_remove() {
+	local name=$(url_clean ${1})
+	local path=$(basename ${1})
+	_printf "> remove plugin: ${name}"
+	sed -i "\%${1}%d" "${SCRIPT_DIR}/plugins"
 
+	(
+		set -ex
+		rm -r "${SCRIPT_DIR}/bundle/${path}"
+	)
+}
+
+plugin_update() {
+	update_plugins
+	update_pathogen
+	if ! ${SKIP}; then
+		update_vimgo
+	fi
+	update_plugins_file
+}
+
+update_plugins() {
+	_printf "> update plugins"
+	while read -r name; do
+		printf "  update ${name}\n"
+		add_plugin "${name}" &>/dev/null &
+	done < "${SCRIPT_DIR}/plugins"
+	wait
+	vim +Helptags +qall
+}
+
+update_pathogen() {
 	_printf "> update pathogen"
-	curl -LSso \
-		"${SCRIPT_DIR}/autoload/pathogen.vim" \
-		"${PATHOGEN_URL}"
+	(
+		set -ex
+		curl -LSso \
+			"${SCRIPT_DIR}/autoload/pathogen.vim" \
+			"${PATHOGEN_URL}"
+	)
 	vim +Helptags +qall
 }
 
 update_vimgo() {
-	if ! ${RUN_UPDATE}; then return 0; fi
-	if ${SKIP_VIMGO}; then return 0; fi
-
 	_printf "> update vim-go binaries"
 	vim +GoUpdateBinaries +qall
+}
+
+update_plugins_file() {
+	_printf "> update plugin file"
+	sed -i -E 's#(\w+://)?github.com/?##g' "${SCRIPT_DIR}/plugins"
+	sort -uo "${SCRIPT_DIR}/plugins" "${SCRIPT_DIR}/plugins"
+}
+
+url_clean() {
+	printf "${1}" | sed -E 's#(\w+://)?github.com/?##g'
+}
+
+url_format() {
+	local name=$(url_clean "${1}")
+	printf "https://github.com/%s" "${name}"
 }
 
 main $@
