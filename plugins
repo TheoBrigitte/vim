@@ -8,5 +8,6 @@ majutsushi/tagbar
 mileszs/ack.vim
 scrooloose/nerdtree
 tpope/vim-sleuth
+valloric/youcompleteme
 vim-scripts/ZoomWin
 wsdjeg/vim-fetch
