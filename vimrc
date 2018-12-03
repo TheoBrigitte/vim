@@ -1,4 +1,4 @@
-source ~/.vim/vimrcs/base.vim
-source ~/.vim/vimrcs/plugin.vim
-source ~/.vim/vimrcs/color.vim
-source ~/.vim/vimrcs/mapping.vim
+source ~/.vim/config/base.vim
+source ~/.vim/config/plugin.vim
+source ~/.vim/config/color.vim
+source ~/.vim/config/mapping.vim
