@@ -10,4 +10,6 @@ SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 set -x
 vim +GoUpdateBinaries +qall
-python3 bundle/youcompleteme/install.py --go-completer
+python3 bundle/youcompleteme/install.py \
+	--go-completer \
+	--ts-completer
