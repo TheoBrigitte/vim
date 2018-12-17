@@ -38,3 +38,6 @@ set viminfo+=n~/.vim/viminfo
 
 set foldmethod=syntax
 set foldlevelstart=99
+
+" out of memory on large files
+set maxmempattern=1200
