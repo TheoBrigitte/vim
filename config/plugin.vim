@@ -37,6 +37,14 @@ let g:tmux_navigator_disable_when_zoomed = 1
 set updatetime=100
 
 " vim-go "
+"" fmt and imports rewrite on save
+let g:go_fmt_autosave = 1
+let g:go_fmt_command = "goimports"
+"" autocomplete
+let g:go_gocode_propose_builtins = 1
+let g:go_gocode_propose_source = 1
+
+"" highlight
 let g:go_highlight_functions = 1
 let g:go_highlight_functions_arguments = 1
 let g:go_highlight_functions_calls = 1
