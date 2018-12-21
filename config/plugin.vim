@@ -2,7 +2,10 @@
 let g:ackprg = 'rg --vimgrep'
 
 " fzf "
+" linux path
 set runtimepath+=/usr/bin/fzf
+" osx path
+set runtimepath+=/usr/local/opt/fzf
 " Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
 command! -bang -nargs=* Rg
   \ call fzf#vim#grep(
