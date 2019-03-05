@@ -84,6 +84,7 @@ plugin_add() {
 
 	echo "${name}" >> "${SCRIPT_DIR}/plugins"
 	update_plugins_file
+	vim +Helptags +qall
 }
 
 add_plugin() {
