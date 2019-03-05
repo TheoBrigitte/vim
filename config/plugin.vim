@@ -17,6 +17,8 @@ command! -bang -nargs=* Rg
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
+" gutentags
+let g:gutentags_generate_on_empty_buffer = 1
 
 " lightline "
 set noshowmode
