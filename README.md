@@ -8,6 +8,12 @@ Here is the list of [plugins](plugins) used.
 
 ### Install
 
+#### Requirements
+
+* universal ctags: https://github.com/universal-ctags/ctags
+
+#### Setup
+
 Clone this repo and run the installer:
 
 `git clone https://github.com/TheoBrigitte/vim ~/.vim && ~/.vim/install.sh`
