@@ -4,6 +4,7 @@ fatih/molokai
 fatih/vim-go
 itchyny/lightline.vim
 junegunn/fzf.vim
+ludovicchabant/vim-gutentags
 majutsushi/tagbar
 mhartington/oceanic-next
 mileszs/ack.vim
