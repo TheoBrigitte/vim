@@ -19,10 +19,17 @@ command! -bang -nargs=? -complete=dir Files
 
 
 " lightline "
+set noshowmode
 let g:lightline = {
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'relativepath', 'modified' ] ],
-      \ }
+      \   'right': [ [ 'lineinfo' ],
+      \              [ 'percent' ],
+      \              [ 'gutentags', 'fileformat', 'fileencoding', 'filetype' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gutentags': 'gutentags#statusline'
+      \ },
       \ }
 
 " NERDtree "
