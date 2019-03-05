@@ -26,6 +26,9 @@ map \x  :bd<CR>
 
 map Z :qa!<CR>
 
+map Y "+y
+"map P "+p
+
 "" no one is really happy until you have this shortcuts
 "cnoreabbrev W! w!
 "cnoreabbrev Q! q!
