@@ -19,6 +19,7 @@ set expandtab
 set shiftwidth=4
 set autoindent
 set smartindent
+filetype plugin indent on
 
 set encoding=utf8
 set ffs=unix,dos,mac
