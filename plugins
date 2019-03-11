@@ -11,7 +11,6 @@ mileszs/ack.vim
 mxw/vim-jsx
 pangloss/vim-javascript
 scrooloose/nerdtree
-tpope/vim-sleuth
 valloric/youcompleteme
 vim-scripts/ZoomWin
 wsdjeg/vim-fetch
