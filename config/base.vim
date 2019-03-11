@@ -14,6 +14,9 @@ set smartcase
 set hlsearch
 set showcmd
 
+set tabstop=8
+set expandtab
+set shiftwidth=4
 set autoindent
 set smartindent
 
