@@ -23,6 +23,8 @@ map \n  :NERDTreeToggle<CR>
 map \m  :NERDTreeFind<CR>
 map \\  :nohlsearch<CR>
 map \x  :bd<CR>
+" paste mode
+set pastetoggle=\\p
 
 map Z :qa!<CR>
 
