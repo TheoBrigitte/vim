@@ -25,7 +25,7 @@ let g:gutentags_generate_on_empty_buffer = 1
 set noshowmode
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'relativepath', 'modified' ] ],
+      \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'relativepath', 'modified', 'bufnum' ] ],
       \   'right': [ [ 'lineinfo' ],
       \              [ 'percent' ],
       \              [ 'gutentags', 'fileformat', 'fileencoding', 'filetype' ] ]
