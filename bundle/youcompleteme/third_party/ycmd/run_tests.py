@@ -12,39 +12,57 @@ from builtins import *  # noqa
 import argparse
 import platform
 import os
+import glob
 import subprocess
 import os.path as p
 import sys
 
 DIR_OF_THIS_SCRIPT = p.dirname( p.abspath( __file__ ) )
 DIR_OF_THIRD_PARTY = p.join( DIR_OF_THIS_SCRIPT, 'third_party' )
+LIBCLANG_DIR = p.join( DIR_OF_THIRD_PARTY, 'clang', 'lib' )
 
-python_path = []
-for folder in os.listdir( DIR_OF_THIRD_PARTY ):
-  # We skip python-future because it needs to be inserted in sys.path AFTER
-  # the standard library imports but we can't do that with PYTHONPATH because
-  # the std lib paths are always appended to PYTHONPATH. We do it correctly in
-  # prod in ycmd/utils.py because we have access to the right sys.path.
-  # So for dev, we rely on python-future being installed correctly with
-  #   pip install -r test_requirements.txt
-  #
-  # Pip knows how to install this correctly so that it doesn't matter where in
-  # sys.path the path is.
-  if folder == 'python-future':
-    continue
-  if folder == 'cregex':
-    folder = p.join( folder, 'regex_{}'.format( sys.version_info[ 0 ] ) )
-  python_path.append( p.abspath( p.join( DIR_OF_THIRD_PARTY, folder ) ) )
+# We skip python-future because it needs to be inserted in sys.path AFTER the
+# standard library imports but we can't do that with PYTHONPATH because the std
+# lib paths are always appended to PYTHONPATH. We do it correctly in ycmd
+# because we have access to the right sys.path. So for dev, we rely on
+# python-future being installed correctly with
+#   pip install -r test_requirements.txt
+#
+# Pip knows how to install this correctly so that it doesn't matter where in
+# sys.path the path is.
+python_path = [
+  p.join( DIR_OF_THIRD_PARTY, 'bottle' ),
+  p.join( DIR_OF_THIRD_PARTY,
+          'cregex',
+          'regex_{}'.format( sys.version_info[ 0 ] ) ),
+  p.join( DIR_OF_THIRD_PARTY, 'frozendict' ),
+  p.join( DIR_OF_THIRD_PARTY, 'jedi_deps', 'jedi' ),
+  p.join( DIR_OF_THIRD_PARTY, 'jedi_deps', 'parso' ),
+  p.join( DIR_OF_THIRD_PARTY, 'requests_deps', 'certifi' ),
+  p.join( DIR_OF_THIRD_PARTY, 'requests_deps', 'chardet' ),
+  p.join( DIR_OF_THIRD_PARTY, 'requests_deps', 'idna' ),
+  p.join( DIR_OF_THIRD_PARTY, 'requests_deps', 'requests' ),
+  p.join( DIR_OF_THIRD_PARTY, 'requests_deps', 'urllib3', 'src' ),
+  p.join( DIR_OF_THIRD_PARTY, 'waitress' ),
+]
 if os.environ.get( 'PYTHONPATH' ) is not None:
-  python_path.append( os.environ['PYTHONPATH'] )
+  python_path.append( os.environ[ 'PYTHONPATH' ] )
 os.environ[ 'PYTHONPATH' ] = os.pathsep.join( python_path )
+
+
+def OnWindows():
+  return platform.system() == 'Windows'
 
 
 def RunFlake8():
   print( 'Running flake8' )
-  subprocess.check_call( [
-    sys.executable, '-m', 'flake8', p.join( DIR_OF_THIS_SCRIPT, 'ycmd' )
-  ] )
+  args = [ sys.executable,
+           '-m',
+           'flake8',
+           p.join( DIR_OF_THIS_SCRIPT, 'ycmd' ) ]
+  root_dir_scripts = glob.glob( p.join( DIR_OF_THIS_SCRIPT, '*.py' ) )
+  args.extend( root_dir_scripts )
+  subprocess.check_call( args )
 
 
 COMPLETERS = {
@@ -52,6 +70,11 @@ COMPLETERS = {
     'build': [ '--clang-completer' ],
     'test': [ '--exclude-dir=ycmd/tests/clang' ],
     'aliases': [ 'c', 'cpp', 'c++', 'objc', 'clang', ]
+  },
+  'clangd': {
+    'build': [ '--clangd-completer' ],
+    'test': [ '--exclude-dir=ycmd/tests/clangd' ],
+    'aliases': []
   },
   'cs': {
     'build': [ '--cs-completer' ],
@@ -97,8 +120,8 @@ def CompleterType( value ):
   if value in COMPLETERS:
     return value
   else:
-    aliases_to_completer = dict( ( i, k ) for k, v in COMPLETERS.items()
-                                 for i in v[ 'aliases' ] )
+    aliases_to_completer = { i: k for k, v in COMPLETERS.items()
+                             for i in v[ 'aliases' ] }
     if value in aliases_to_completer:
       return aliases_to_completer[ value ]
     else:
@@ -115,11 +138,11 @@ def ParseArguments():
   group.add_argument( '--no-completers', nargs ='*', type = CompleterType,
                        help = 'Do not build or test with listed semantic '
                        'completion engine(s). Valid values: {0}'.format(
-                        COMPLETERS.keys()) )
+                        COMPLETERS.keys() ) )
   group.add_argument( '--completers', nargs ='*', type = CompleterType,
                        help = 'Only build and test with listed semantic '
                        'completion engine(s). Valid values: {0}'.format(
-                        COMPLETERS.keys()) )
+                        COMPLETERS.keys() ) )
   parser.add_argument( '--skip-build', action = 'store_true',
                        help = 'Do not build ycmd before testing.' )
   parser.add_argument( '--msvc', type = int, choices = [ 14, 15 ],
@@ -202,7 +225,7 @@ def NoseTests( parsed_args, extra_nosetests_args ):
   # By default, nose does not include files starting with a underscore in its
   # report but we want __main__.py to be included. Only ignore files starting
   # with a dot and setup.py.
-  nosetests_args = [ '-v', '--with-id', '--ignore-files=(^\.|^setup\.py$)' ]
+  nosetests_args = [ '-v', '--with-id', r'--ignore-files=(^\.|^setup\.py$)' ]
 
   for key in COMPLETERS:
     if key not in parsed_args.completers:
@@ -228,6 +251,13 @@ def NoseTests( parsed_args, extra_nosetests_args ):
   if parsed_args.no_retry:
     # Useful for _writing_ tests
     env[ 'YCM_TEST_NO_RETRY' ] = '1'
+
+  if OnWindows():
+    # We prepend the Clang third-party directory to the PATH instead of
+    # overwriting it so that the executable is able to find the Python library.
+    env[ 'PATH' ] = LIBCLANG_DIR + ';' + env[ 'PATH' ]
+  else:
+    env[ 'LD_LIBRARY_PATH' ] = LIBCLANG_DIR
 
   subprocess.check_call( [ sys.executable, '-m', 'nose' ] + nosetests_args,
                          env=env )

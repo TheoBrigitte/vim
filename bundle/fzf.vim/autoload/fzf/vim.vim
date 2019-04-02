@@ -583,7 +583,7 @@ function! s:find_open_window(b)
 endfunction
 
 function! s:jump(t, w)
-  execute 'normal!' a:t.'gt'
+  execute a:t.'tabnext'
   execute a:w.'wincmd w'
 endfunction
 
@@ -896,7 +896,7 @@ function! s:command_sink(lines)
   endif
   let cmd = matchstr(a:lines[1], s:nbs.'\zs\S*\ze'.s:nbs)
   if empty(a:lines[0])
-    call feedkeys(':'.cmd.(a:lines[1][0] == '!' ? '' : ' '))
+    call feedkeys(':'.cmd.(a:lines[1][0] == '!' ? '' : ' '), 'n')
   else
     execute cmd
   endif

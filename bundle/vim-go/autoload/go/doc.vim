@@ -35,7 +35,7 @@ function! go#doc#OpenBrowser(...) abort
       let godoc_url .= "#" . name
     endif
 
-    call go#tool#OpenBrowser(godoc_url)
+    call go#util#OpenBrowser(godoc_url)
     return
   endif
 
@@ -49,16 +49,12 @@ function! go#doc#OpenBrowser(...) abort
 
   " example url: https://godoc.org/github.com/fatih/set#Set
   let godoc_url = go#config#DocUrl() . "/" . pkg . "#" . exported_name
-  call go#tool#OpenBrowser(godoc_url)
+  call go#util#OpenBrowser(godoc_url)
 endfunction
 
 function! go#doc#Open(newmode, mode, ...) abort
   " With argument: run "godoc [arg]".
   if len(a:000)
-    if empty(go#path#CheckBinPath(go#config#DocCommand()[0]))
-      return
-    endif
-
     let [l:out, l:err] = go#util#Exec(['go', 'doc'] + a:000)
   else " Without argument: run gogetdoc on cursor position.
     let [l:out, l:err] = s:gogetdoc(0)

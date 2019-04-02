@@ -45,6 +45,11 @@ let s:pollers = {
       \     'wait_milliseconds': 100
       \   }
       \ }
+let s:buftype_blacklist = {
+      \   'help': 1,
+      \   'terminal': 1,
+      \   'quickfix': 1
+      \ }
 
 
 " When both versions are available, we prefer Python 3 over Python 2:
@@ -132,7 +137,7 @@ function! youcompleteme#Enable()
     " filetype) and if so, the FileType event has triggered before and thus the
     " buffer is already parsed.
     autocmd FileType * call s:OnFileTypeSet()
-    autocmd BufEnter * call s:OnBufferEnter()
+    autocmd BufEnter,CmdwinEnter * call s:OnBufferEnter()
     autocmd BufUnload * call s:OnBufferUnload()
     autocmd InsertLeave * call s:OnInsertLeave()
     autocmd VimLeave * call s:OnVimLeave()
@@ -188,19 +193,46 @@ from __future__ import division
 from __future__ import absolute_import
 
 import os.path as p
+import re
 import sys
 import traceback
 import vim
 
 root_folder = p.normpath( p.join( vim.eval( 's:script_folder_path' ), '..' ) )
 third_party_folder = p.join( root_folder, 'third_party' )
-ycmd_third_party_folder = p.join( third_party_folder, 'ycmd', 'third_party' )
+python_stdlib_zip_regex = re.compile( 'python[23][0-9]\\.zip' )
+
+
+def IsStandardLibraryFolder( path ):
+  return ( ( p.isfile( path )
+             and python_stdlib_zip_regex.match( p.basename( path ) ) )
+           or p.isfile( p.join( path, 'os.py' ) ) )
+
+
+def IsVirtualEnvLibraryFolder( path ):
+  return p.isfile( p.join( path, 'orig-prefix.txt' ) )
+
+
+def GetStandardLibraryIndexInSysPath():
+  for index, path in enumerate( sys.path ):
+    if ( IsStandardLibraryFolder( path ) and
+         not IsVirtualEnvLibraryFolder( path ) ):
+      return index
+  raise RuntimeError( 'Could not find standard library path in Python path.' )
+
 
 # Add dependencies to Python path.
 dependencies = [ p.join( root_folder, 'python' ),
                  p.join( third_party_folder, 'requests-futures' ),
                  p.join( third_party_folder, 'ycmd' ),
-                 p.join( ycmd_third_party_folder, 'requests' ) ]
+                 p.join( third_party_folder, 'requests_deps', 'idna' ),
+                 p.join( third_party_folder, 'requests_deps', 'chardet' ),
+                 p.join( third_party_folder,
+                         'requests_deps',
+                         'urllib3',
+                         'src' ),
+                 p.join( third_party_folder, 'requests_deps', 'certifi' ),
+                 p.join( third_party_folder, 'requests_deps', 'requests' ) ]
 
 # The concurrent.futures module is part of the standard library on Python 3.
 if sys.version_info[ 0 ] == 2:
@@ -211,9 +243,8 @@ sys.path[ 0:0 ] = dependencies
 # We enclose this code in a try/except block to avoid backtraces in Vim.
 try:
   # The python-future module must be inserted after the standard library path.
-  from ycmd.server_utils import GetStandardLibraryIndexInSysPath
   sys.path.insert( GetStandardLibraryIndexInSysPath() + 1,
-                   p.join( ycmd_third_party_folder, 'python-future', 'src' ) )
+                   p.join( third_party_folder, 'python-future', 'src' ) )
 
   # Import the modules used in this file.
   from ycm import base, vimsupport, youcompleteme
@@ -402,23 +433,23 @@ endfunction
 
 
 function! s:AllowedToCompleteInBuffer( buffer )
-  let buffer_filetype = getbufvar( a:buffer, '&filetype' )
+  let buftype = getbufvar( a:buffer, '&buftype' )
 
-  if empty( buffer_filetype ) ||
-        \ getbufvar( a:buffer, '&buftype' ) ==# 'nofile' ||
-        \ buffer_filetype ==# 'qf'
+  if has_key( s:buftype_blacklist, buftype )
     return 0
   endif
 
-  if s:DisableOnLargeFile( a:buffer )
+  let filetype = getbufvar( a:buffer, '&filetype' )
+
+  if empty( filetype ) || s:DisableOnLargeFile( a:buffer )
     return 0
   endif
 
   let whitelist_allows = type( g:ycm_filetype_whitelist ) != type( {} ) ||
         \ has_key( g:ycm_filetype_whitelist, '*' ) ||
-        \ has_key( g:ycm_filetype_whitelist, buffer_filetype )
+        \ has_key( g:ycm_filetype_whitelist, filetype )
   let blacklist_allows = type( g:ycm_filetype_blacklist ) != type( {} ) ||
-        \ !has_key( g:ycm_filetype_blacklist, buffer_filetype )
+        \ !has_key( g:ycm_filetype_blacklist, filetype )
 
   let allowed = whitelist_allows && blacklist_allows
   if allowed
@@ -483,16 +514,32 @@ endfunction
 
 
 function! s:OnVimLeave()
+  " Workaround a NeoVim issue - not shutting down timers correctly
+  " https://github.com/neovim/neovim/issues/6840
+  for poller in values( s:pollers )
+    call timer_stop( poller.id )
+  endfor
   exec s:python_command "ycm_state.OnVimLeave()"
 endfunction
 
 
 function! s:OnCompleteDone()
+  if !s:AllowedToCompleteInCurrentBuffer()
+    return
+  endif
+
   exec s:python_command "ycm_state.OnCompleteDone()"
 endfunction
 
 
 function! s:OnFileTypeSet()
+  " The contents of the command-line window are empty when the filetype is set
+  " for the first time. Users should never change its filetype so we only rely
+  " on the CmdwinEnter event for that window.
+  if !empty( getcmdwintype() )
+    return
+  endif
+
   if !s:AllowedToCompleteInCurrentBuffer()
     return
   endif

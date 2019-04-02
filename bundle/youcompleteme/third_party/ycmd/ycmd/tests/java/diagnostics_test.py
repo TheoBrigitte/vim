@@ -277,7 +277,7 @@ def FileReadyToParse_Diagnostics_Simple_test( app ):
   assert_that( results, DIAG_MATCHERS_PER_FILE[ filepath ] )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def FileReadyToParse_Diagnostics_FileNotOnDisk_test( app ):
   StartJavaCompleterServerInDirectory( app,
                                        PathToTestFile( DEFAULT_PROJECT_DIR ) )
@@ -378,7 +378,7 @@ def Poll_Diagnostics_ProjectWide_Eclipse_test( app ):
         json.dumps( sorted( iterkeys( seen ) ), indent=2 ) ) )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def Poll_Diagnostics_ChangeFileContents_test( app ):
   StartJavaCompleterServerInDirectory( app,
                                        PathToTestFile( DEFAULT_PROJECT_DIR ) )
@@ -460,7 +460,7 @@ public class Test {
       time.sleep( 0.25 )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def FileReadyToParse_ServerNotReady_test( app ):
   filepath = TestFactory
   contents = ReadFile( filepath )
@@ -497,7 +497,7 @@ def FileReadyToParse_ServerNotReady_test( app ):
     assert_that( results, empty() )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def FileReadyToParse_ChangeFileContents_test( app ):
   filepath = TestFactory
   contents = ReadFile( filepath )
@@ -569,7 +569,7 @@ def FileReadyToParse_ChangeFileContents_test( app ):
   assert_that( result, equal_to( {} ) )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def FileReadyToParse_ChangeFileContentsFileData_test( app ):
   filepath = TestFactory
   contents = ReadFile( filepath )
@@ -647,7 +647,7 @@ def OnBufferUnload_ServerNotRunning_test( app ):
     assert_that( result, equal_to( {} ) )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def PollForMessages_InvalidUri_test( app, *args ):
   StartJavaCompleterServerInDirectory(
     app,
@@ -679,7 +679,7 @@ def PollForMessages_InvalidUri_test( app, *args ):
   assert_that( response, equal_to( True ) )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 @patch.object( completer, 'MESSAGE_POLL_TIMEOUT', 2 )
 def PollForMessages_ServerNotRunning_test( app ):
   StartJavaCompleterServerInDirectory(
@@ -705,7 +705,7 @@ def PollForMessages_ServerNotRunning_test( app ):
   assert_that( response, equal_to( False ) )
 
 
-@IsolatedYcmd
+@IsolatedYcmd()
 def PollForMessages_AbortedWhenServerDies_test( app ):
   StartJavaCompleterServerInDirectory(
     app,
@@ -714,17 +714,24 @@ def PollForMessages_AbortedWhenServerDies_test( app ):
   filepath = TestFactory
   contents = ReadFile( filepath )
 
+  state = {
+    'aborted': False
+  }
+
   def AwaitMessages():
-    for tries in range( 0, 5 ):
+    max_tries = 20
+    for tries in range( 0, max_tries ):
       response = app.post_json( '/receive_messages',
                                 BuildRequest(
                                   filetype = 'java',
                                   filepath = filepath,
                                   contents = contents ) ).json
       if response is False:
+        state[ 'aborted' ] = True
         return
 
-    raise AssertionError( 'The poll request was not aborted in 5 tries' )
+    raise AssertionError( 'The poll request was not aborted in {} tries'.format(
+      max_tries ) )
 
   message_poll_task = StartThread( AwaitMessages )
 
@@ -737,3 +744,4 @@ def PollForMessages_AbortedWhenServerDies_test( app ):
   )
 
   message_poll_task.join()
+  eq_( state[ 'aborted' ], True )

@@ -30,16 +30,19 @@ from hamcrest import ( assert_that,
                        empty,
                        has_entries,
                        instance_of,
+                       is_not,
                        matches_regexp )
 from nose.tools import eq_
 from pprint import pformat
 import requests
+import json
 
 from ycmd.utils import ReadFile
 from ycmd.completers.java.java_completer import NO_DOCUMENTATION_MESSAGE
 from ycmd.tests.java import ( DEFAULT_PROJECT_DIR,
                               PathToTestFile,
-                              SharedYcmd )
+                              SharedYcmd,
+                              IsolatedYcmd )
 from ycmd.tests.test_utils import ( BuildRequest,
                                     ChunkMatcher,
                                     CombineRequest,
@@ -54,6 +57,7 @@ from ycmd.completers.language_server.language_server_completer import (
   ResponseTimeoutException,
   ResponseFailedException
 )
+from ycmd.responses import UnknownExtraConf
 
 
 
@@ -1667,5 +1671,85 @@ def Subcommands_DifferentFileTypesUpdate_test( app ):
     'expect': {
       'response': requests.codes.ok,
       'data': has_entries( { 'fixits': empty() } ),
+    }
+  } )
+
+
+@WithRetry
+@IsolatedYcmd( { 'extra_conf_globlist':
+                 PathToTestFile( 'extra_confs', '*' ) } )
+def Subcommands_ExtraConf_SettingsValid_test( app ):
+  filepath = PathToTestFile( 'extra_confs',
+                             'simple_extra_conf_project',
+                             'src',
+                             'ExtraConf.java' )
+  RunTest( app, {
+    'description': 'RefactorRename is disabled in extra conf.',
+    'request': {
+      'command': 'RefactorRename',
+      'arguments': [ 'renamed_l' ],
+      'filepath': filepath,
+      'line_num': 1,
+      'column_num': 7,
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'fixits': contains( has_entries( {
+          'chunks': empty(),
+          'location': LocationMatcher( filepath, 1, 7 )
+        } ) )
+      } )
+    }
+  } )
+
+
+@IsolatedYcmd()
+def Subcommands_ExtraConf_SettingsValid_UnknownExtraConf_test( app ):
+  filepath = PathToTestFile( 'extra_confs',
+                             'simple_extra_conf_project',
+                             'src',
+                             'ExtraConf.java' )
+  contents = ReadFile( filepath )
+
+  response = app.post_json( '/event_notification',
+                            BuildRequest( **{
+                              'event_name': 'FileReadyToParse',
+                              'contents': contents,
+                              'filepath': filepath,
+                              'line_num': 1,
+                              'column_num': 7,
+                              'filetype': 'java',
+                            } ),
+                            expect_errors = True )
+
+  print( 'FileReadyToParse result: {}'.format( json.dumps( response.json,
+                                                           indent = 2 ) ) )
+
+  eq_( response.status_code, requests.codes.internal_server_error )
+  assert_that( response.json, ErrorMatcher( UnknownExtraConf ) )
+
+  app.post_json(
+    '/ignore_extra_conf_file',
+    { 'filepath': PathToTestFile( 'extra_confs', '.ycm_extra_conf.py' ) } )
+
+  RunTest( app, {
+    'description': 'RefactorRename is disabled in extra conf but ignored.',
+    'request': {
+      'command': 'RefactorRename',
+      'arguments': [ 'renamed_l' ],
+      'filepath': filepath,
+      'contents': contents,
+      'line_num': 1,
+      'column_num': 7,
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'fixits': contains( has_entries( {
+          # Just prove that we actually got a reasonable result
+          'chunks': is_not( empty() ),
+        } ) )
+      } )
     }
   } )
