@@ -18,7 +18,7 @@ Clone this repo and run the installer:
 
 `git clone https://github.com/TheoBrigitte/vim ~/.vim && ~/.vim/install.sh`
 
-Note: It will backup your current .vimrc file to ~/.vimrc_<date>
+Note: It will backup your current .vimrc file to `~/.vimrc_<date>`
 
 ### Plugins management
 
