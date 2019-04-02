@@ -19,6 +19,7 @@ command! -bang -nargs=? -complete=dir Files
 
 " gutentags
 let g:gutentags_generate_on_empty_buffer = 1
+let g:gutentags_cache_dir = '~/.cache/vim_gutentags'
 
 
 " lightline
