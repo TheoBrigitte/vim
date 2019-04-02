@@ -39,6 +39,8 @@ let g:lightline = {
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 
@@ -79,6 +81,15 @@ let g:tmux_navigator_disable_when_zoomed = 1
 set updatetime=100
 
 " vim-go
+"" set guru scope to project root directory.
+autocmd VimEnter *
+      \ if argc() == 0 && !exists("s:std_in") | let s:file = getcwd() | elseif argc() == 1 && !exists("s:std_in") | let s:file = fnamemodify(argv()[0], ':p:h') | endif
+      \| if len(s:file) > 0
+      \| let s:tmp = matchlist(s:file, $GOPATH . '/src/\(.\+\)/\?')
+      \| if len(s:tmp) > 1 | let s:scope = s:tmp[1] | else | let s:scope = s:file | endif
+      \| let g:go_guru_scope = [s:scope]
+      \| endif
+      \| unlet s:tmp s:file s:scope
 "" fmt and imports rewrite on save
 let g:go_fmt_autosave = 1
 let g:go_fmt_command = "goimports"
