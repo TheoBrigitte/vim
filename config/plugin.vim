@@ -80,11 +80,13 @@ set updatetime=100
 
 " vim-go
 autocmd VimEnter *
-      \ if argc() == 0 && !exists("s:std_in") | let s:file = getcwd() | elseif argc() == 1 && !exists("s:std_in") | let s:file = fnamemodify(argv()[0], ':p:h') | endif
+      \ let s:file = ""
+      \| if argc() == 0 && !exists("s:std_in") | let s:file = getcwd() | elseif argc() == 1 && !exists("s:std_in") | let s:file = fnamemodify(argv()[0], ':p:h') | endif
       \| if len(s:file) > 0
       \| let s:tmp = matchlist(s:file, $GOPATH . '/src/\(.\+\)/\?')
       \| if len(s:tmp) > 1 | let s:scope = s:tmp[1] | else | let s:scope = s:file | endif
       \| let g:go_guru_scope = [s:scope]
+      \| unlet s:tmp s:scope
       \| endif
       \| unlet s:file "set guru scope to project root directory
 let g:go_fmt_autosave = 1 "go fmt on save
