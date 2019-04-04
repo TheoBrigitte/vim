@@ -1,7 +1,7 @@
-" clean autocmd (avoid duplicate autocmd commands)
+"clean autocmd (avoid duplicate autocmd commands)
 :autocmd!
 
-" load plugins
+"load plugins
 execute pathogen#infect()
 
 set mouse=a
@@ -42,8 +42,7 @@ set splitbelow
 
 set viminfo+=n~/.vim/viminfo
 
-set foldmethod=syntax
-set foldlevelstart=99
+set foldmethod=syntax "enable lines folding
+set foldlevelstart=99 "do not close any fold on start
 
-" out of memory on large files
-set maxmempattern=1200
+set maxmempattern=1200 "fixes out of memory on large files

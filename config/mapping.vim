@@ -7,23 +7,24 @@ nnoremap <silent> `<Up> :TmuxNavigateUp<cr>
 nnoremap <silent> `<Right> :TmuxNavigateRight<cr>
 nnoremap <silent> `<Tab> :TmuxNavigatePrevious<cr>
 
-" b for buffers
+"b for buffers
 map \b  :Buffers<CR>
-" f for files
+"f for files
 map \f  :FZF --inline-info<CR>
-" t for tags
+"t for tags
 map \t  :Tags<CR>
-" g for grep
+"g for grep
 map \g  :Ack 
-" l for list
+"l for tag list
 map \l  :TagbarToggle<CR>
-" r for rename
+"r for rename
 map \r  :GoRename<CR>
+"n for nerdtree
 map \n  :NERDTreeToggle<CR>
 map \m  :NERDTreeFind<CR>
 map \\  :nohlsearch<CR>
 map \x  :bd<CR>
-" paste mode
+"toggle paste mode
 set pastetoggle=\\p
 
 map Z :qa!<CR>

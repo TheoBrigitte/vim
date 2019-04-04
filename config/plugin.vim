@@ -2,25 +2,20 @@
 let g:ackprg = 'rg --vimgrep'
 
 " fzf
-"" linux path
-set runtimepath+=/usr/bin/fzf
-"" osx path
-set runtimepath+=/usr/local/opt/fzf
-"" Similarly, we can apply it to fzf#vim#grep. To use ripgrep instead of ag:
+set runtimepath+=/usr/bin/fzf "fzf path on linux
+set runtimepath+=/usr/local/opt/fzf "fzf path on osx
 command! -bang -nargs=* Rg
   \ call fzf#vim#grep(
   \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
   \   <bang>0 ? fzf#vim#with_preview('up:60%')
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0)
-"" Likewise, Files command with preview window
+  \   <bang>0) "use ripgrep instead of ag:
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0) "files command with preview window
 
 " gutentags
 let g:gutentags_generate_on_empty_buffer = 1
 let g:gutentags_cache_dir = '~/.cache/vim_gutentags'
-
 
 " lightline
 set noshowmode
@@ -83,7 +78,6 @@ let g:tmux_navigator_disable_when_zoomed = 1
 set updatetime=100
 
 " vim-go
-"" set guru scope to project root directory.
 autocmd VimEnter *
       \ if argc() == 0 && !exists("s:std_in") | let s:file = getcwd() | elseif argc() == 1 && !exists("s:std_in") | let s:file = fnamemodify(argv()[0], ':p:h') | endif
       \| if len(s:file) > 0
@@ -91,14 +85,11 @@ autocmd VimEnter *
       \| if len(s:tmp) > 1 | let s:scope = s:tmp[1] | else | let s:scope = s:file | endif
       \| let g:go_guru_scope = [s:scope]
       \| endif
-      \| unlet s:tmp s:file s:scope
-"" fmt and imports rewrite on save
-let g:go_fmt_autosave = 1
-let g:go_fmt_command = "goimports"
-"" autocomplete
-let g:go_gocode_propose_builtins = 1
-let g:go_gocode_propose_source = 1
-"" highlight
+      \| unlet s:file "set guru scope to project root directory
+let g:go_fmt_autosave = 1 "go fmt on save
+let g:go_fmt_command = "goimports" "imports rewrite on save
+let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
+let g:go_gocode_propose_source = 1 "autocomplete from source
 let g:go_highlight_functions = 1
 let g:go_highlight_functions_arguments = 1
 let g:go_highlight_functions_calls = 1
