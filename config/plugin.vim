@@ -75,6 +75,9 @@ let g:tagbar_type_go = {
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_disable_when_zoomed = 1
 
+" utils snips
+let g:UltiSnipsExpandTrigger="<c-space>"
+
 " vim-gitgutter
 set updatetime=100
 
