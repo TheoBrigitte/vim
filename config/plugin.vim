@@ -104,6 +104,7 @@ let g:go_highlight_fields = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
+let g:go_build_tags = "k8srequired"
 
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
