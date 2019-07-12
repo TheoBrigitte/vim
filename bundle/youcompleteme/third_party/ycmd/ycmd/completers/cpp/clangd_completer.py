@@ -22,19 +22,26 @@ from __future__ import absolute_import
 # Not installing aliases from python-future; it's unreliable and slow.
 from builtins import *  # noqa
 
-import subprocess
+import logging
 import os
-import threading
-import re
+import subprocess
 
-from ycmd import responses, utils
+from ycmd import extra_conf_store, responses
 from ycmd.completers.completer_utils import GetFileLines
+from ycmd.completers.cpp.flags import ( AddMacIncludePaths,
+                                        RemoveUnusedFlags,
+                                        ShouldAllowWinStyleFlags )
+from ycmd.completers.language_server import simple_language_server_completer
 from ycmd.completers.language_server import language_server_completer
 from ycmd.completers.language_server import language_server_protocol as lsp
-from ycmd.utils import ( GetExecutable,
+from ycmd.utils import ( CLANG_RESOURCE_DIR,
+                         GetExecutable,
                          ExpandVariablesInPath,
+                         FindExecutable,
                          LOGGER,
-                         CLANG_RESOURCE_DIR )
+                         OnMac,
+                         PathsToAllParentFolders,
+                         re )
 
 MIN_SUPPORTED_VERSION = '7.0.0'
 INCLUDE_REGEX = re.compile(
@@ -119,7 +126,7 @@ def GetClangdExecutableAndResourceDir( user_options ):
   resource_dir = None
 
   if clangd:
-    clangd = GetExecutable( ExpandVariablesInPath( clangd ) )
+    clangd = FindExecutable( ExpandVariablesInPath( clangd ) )
 
     if not clangd:
       LOGGER.error( 'No Clangd executable found at %s',
@@ -161,18 +168,22 @@ def GetClangdCommand( user_options ):
   put_resource_dir = False
   put_limit_results = False
   put_header_insertion_decorators = False
+  put_log = False
   for arg in clangd_args:
     CLANGD_COMMAND.append( arg )
     put_resource_dir = put_resource_dir or arg.startswith( '-resource-dir' )
     put_limit_results = put_limit_results or arg.startswith( '-limit-results' )
     put_header_insertion_decorators = ( put_header_insertion_decorators or
                         arg.startswith( '-header-insertion-decorators' ) )
+    put_log = put_log or arg.startswith( '-log' )
   if not put_header_insertion_decorators:
     CLANGD_COMMAND.append( '-header-insertion-decorators=0' )
   if resource_dir and not put_resource_dir:
     CLANGD_COMMAND.append( '-resource-dir=' + resource_dir )
   if user_options[ 'clangd_uses_ycmd_caching' ] and not put_limit_results:
     CLANGD_COMMAND.append( '-limit-results=500' )
+  if LOGGER.isEnabledFor( logging.DEBUG ) and not put_log:
+    CLANGD_COMMAND.append( '-log=verbose' )
 
   return CLANGD_COMMAND
 
@@ -194,7 +205,30 @@ def ShouldEnableClangdCompleter( user_options ):
   return True
 
 
-class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
+def PrependCompilerToFlags( flags, enable_windows_style_flags ):
+  """Removes everything before the first flag and returns the remaining flags
+  prepended with clang-tool."""
+  for index, flag in enumerate( flags ):
+    if ( flag.startswith( '-' ) or
+         ( enable_windows_style_flags and
+           flag.startswith( '/' ) and
+           not os.path.exists( flag ) ) ):
+      flags = flags[ index: ]
+      break
+  return [ 'clang-tool' ] + flags
+
+
+def BuildCompilationCommand( flags, filepath ):
+  """Returns a compilation command from a list of flags and a file."""
+  enable_windows_style_flags = ShouldAllowWinStyleFlags( flags )
+  flags = PrependCompilerToFlags( flags, enable_windows_style_flags )
+  flags = RemoveUnusedFlags( flags, filepath, enable_windows_style_flags )
+  if OnMac():
+    flags = AddMacIncludePaths( flags )
+  return flags + [ filepath ]
+
+
+class ClangdCompleter( simple_language_server_completer.SimpleLSPCompleter ):
   """A LSP-based completer for C-family languages, powered by Clangd.
 
   Supported features:
@@ -206,46 +240,35 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
   def __init__( self, user_options ):
     super( ClangdCompleter, self ).__init__( user_options )
 
-    # Used to ensure that starting/stopping of the server is synchronized.
-    # Guards _connection and _server_handle.
-    self._server_state_mutex = threading.RLock()
     self._clangd_command = GetClangdCommand( user_options )
-    self._stderr_file = None
-
-    self._Reset()
-    self._auto_trigger = user_options[ 'auto_trigger' ]
     self._use_ycmd_caching = user_options[ 'clangd_uses_ycmd_caching' ]
+    self._compilation_commands = {}
+
+    self.RegisterOnFileReadyToParse(
+      lambda self, request_data: self._SendFlagsFromExtraConf( request_data )
+    )
 
 
   def _Reset( self ):
     with self._server_state_mutex:
-      self.ServerReset() # Cleanup subclass internal states.
-      self._connection = None
-      self._server_handle = None
-      if self._stderr_file is not None:
-        utils.RemoveIfExists( self._stderr_file )
-        self._stderr_file = None
+      super( ClangdCompleter, self )._Reset()
+      self._compilation_commands = {}
 
 
-  def GetConnection( self ):
-    with self._server_state_mutex:
-      return self._connection
+  def GetCompleterName( self ):
+    return 'C-family'
 
 
-  def DebugInfo( self, request_data ):
-    with self._server_state_mutex:
-      clangd = responses.DebugInfoServer( name = 'clangd',
-                                          handle = self._server_handle,
-                                          executable = self._clangd_command,
-                                          logfiles = [ self._stderr_file ],
-                                          extras = self.CommonDebugItems() )
+  def GetServerName( self ):
+    return 'Clangd'
 
-      return responses.BuildDebugInfoResponse( name = 'clangd',
-                                               servers = [ clangd ] )
+
+  def GetCommandLine( self ):
+    return self._clangd_command
 
 
   def Language( self ):
-    return 'clangd'
+    return 'cfamily'
 
 
   def SupportedFiletypes( self ):
@@ -253,10 +276,11 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
 
 
   def GetType( self, request_data ):
-    return self.GetHoverResponse( request_data )[ 'value' ]
+    hover_response = self.GetHoverResponse( request_data )
+    return responses.BuildDisplayMessageResponse( hover_response[ 'value' ] )
 
 
-  def _GetTriggerCharacters( self, server_trigger_characters ):
+  def GetTriggerCharacters( self, server_trigger_characters ):
     # The trigger characters supplied by clangd are worse than ycmd's own
     # semantic triggers which are more sophisticated (regex-based). So we
     # ignore them.
@@ -276,11 +300,18 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
       'GetTypeImprecise': (
         lambda self, request_data, args: self.GetType( request_data )
       ),
-      'GoToInclude': (
-        lambda self, request_data, args: self.GoToDeclaration( request_data )
+      # NOTE: these two commands are only kept for backward compatibility with
+      # the libclang completer.
+      'GoToImprecise': (
+        lambda self, request_data, args: self.GoTo( request_data,
+                                                    [ 'Definition' ] )
       ),
-      'StopServer': (
-        lambda self, request_data, args: self.Shutdown()
+      'GoToInclude': (
+        lambda self, request_data, args: self.GoTo( request_data,
+                                                    [ 'Definition' ] )
+      ),
+      'RestartServer': (
+        lambda self, request_data, args: self._RestartServer( request_data )
       ),
       # To handle the commands below we need extensions to LSP. One way to
       # provide those could be to use workspace/executeCommand requset.
@@ -303,32 +334,24 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
     return None
 
 
-  def GetCodepointForCompletionRequest( self, request_data ):
-    """Overriden to pass the actual cursor position to clangd."""
-
-    # There are two types of codepoint offsets on the current line in ycmd:
-    #   - start_codepoint: where the completion identifier starts.
-    #   - column_codepoint: where the current cursor is placed.
-    # ycmd uses the start_codepoint by default -- because it caches completion
-    # items and does filtering/ranking. Instead, we use the filtering/ranking
-    # results from clangd, thus we pass "column_codepoint" (which includes the
-    # whole query string e.g. "std::u_p") to clangd.
-    return request_data[ 'column_codepoint' ]
-
-
-  # TODO: Turn on coverage detection when updating to LLVM8 release. It is
-  # currently turned off because Clangd doesn't support it in LLVM7 release.
-  def ShouldCompleteIncludeStatement( self, request_data ): # pragma: no cover
+  def ShouldCompleteIncludeStatement( self, request_data ):
     column_codepoint = request_data[ 'column_codepoint' ] - 1
     current_line = request_data[ 'line_value' ]
-    return INCLUDE_REGEX.match( current_line[ : column_codepoint ] )
+    return bool( INCLUDE_REGEX.match( current_line[ : column_codepoint ] ) )
+
+
+  def ShouldUseNowInner( self, request_data ):
+    return ( self.ServerIsReady() and
+             ( super( language_server_completer.LanguageServerCompleter,
+                      self ).ShouldUseNowInner( request_data ) or
+               self.ShouldCompleteIncludeStatement( request_data ) ) )
 
 
   def ShouldUseNow( self, request_data ):
-    """Overriden to avoid ycmd's caching/filtering logic."""
+    """Overridden to use Clangd filtering and sorting when ycmd caching is
+    disabled."""
     # Clangd should be able to provide completions in any context.
-    # FIXME: Empty queries provide spammy results, fix this in clangd.
-    # FIXME: Add triggers for include completion with release of LLVM8.
+    # FIXME: Empty queries provide spammy results, fix this in Clangd.
     if self._use_ycmd_caching:
       return super( ClangdCompleter, self ).ShouldUseNow( request_data )
     return ( request_data[ 'query' ] != '' or
@@ -336,93 +359,15 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
 
 
   def ComputeCandidates( self, request_data ):
-    """Orverriden to bypass ycmd's cache."""
-    # Caching results means reranking them, and ycmd has fewer signals.
+    """Overridden to bypass ycmd cache if disabled."""
+    # Caching results means resorting them, and ycmd has fewer signals.
     if self._use_ycmd_caching:
       return super( ClangdCompleter, self ).ComputeCandidates( request_data )
-    return super( ClangdCompleter, self ).ComputeCandidatesInner( request_data )
-
-
-  def ServerIsHealthy( self ):
-    with self._server_state_mutex:
-      return utils.ProcessIsRunning( self._server_handle )
-
-
-  def StartServer( self, request_data ):
-    with self._server_state_mutex:
-      # Ensure we cleanup all states.
-      self._Reset()
-
-      LOGGER.info( 'Starting clangd: %s', self._clangd_command )
-      self._stderr_file = utils.CreateLogfile( 'clangd_stderr' )
-      with utils.OpenForStdHandle( self._stderr_file ) as stderr:
-        self._server_handle = utils.SafePopen( self._clangd_command,
-                                               stdin = subprocess.PIPE,
-                                               stdout = subprocess.PIPE,
-                                               stderr = stderr )
-
-      self._connection = (
-        language_server_completer.StandardIOLanguageServerConnection(
-          self._server_handle.stdin,
-          self._server_handle.stdout,
-          self.GetDefaultNotificationHandler() )
-      )
-
-      self._connection.Start()
-
-      try:
-        self._connection.AwaitServerConnection()
-      except language_server_completer.LanguageServerConnectionTimeout:
-        LOGGER.error( 'Clangd failed to start, or did not connect '
-                      'successfully' )
-        self.Shutdown()
-        return False
-
-    LOGGER.info( 'Clangd started' )
-
-    return True
-
-
-  def Shutdown( self ):
-    with self._server_state_mutex:
-      LOGGER.info( 'Shutting down clangd...' )
-
-      # Tell the connection to expect the server to disconnect
-      if self._connection:
-        self._connection.Stop()
-
-      if not self.ServerIsHealthy():
-        LOGGER.info( 'Clangd is not running' )
-        self._Reset()
-        return
-
-      LOGGER.info( 'Stopping Clangd with PID %s', self._server_handle.pid )
-
-      try:
-        self.ShutdownServer()
-
-        # By this point, the server should have shut down and terminated. To
-        # ensure that isn't blocked, we close all of our connections and wait
-        # for the process to exit.
-        #
-        # If, after a small delay, the server has not shut down we do NOT kill
-        # it; we expect that it will shut itself down eventually. This is
-        # predominantly due to strange process behaviour on Windows.
-        if self._connection:
-          self._connection.Close()
-
-        utils.WaitUntilProcessIsTerminated( self._server_handle,
-                                            timeout = 15 )
-
-        LOGGER.info( 'Clangd stopped' )
-      except Exception:
-        LOGGER.exception( 'Error while stopping Clangd server' )
-        # We leave the process running. Hopefully it will eventually die of its
-        # own accord.
-
-      # Tidy up our internal state, even if the completer server didn't close
-      # down cleanly.
-      self._Reset()
+    codepoint = request_data[ 'column_codepoint' ]
+    candidates, _ = super( ClangdCompleter,
+                           self ).ComputeCandidatesInner( request_data,
+                                                          codepoint )
+    return candidates
 
 
   def GetDetailedDiagnostic( self, request_data ):
@@ -463,3 +408,68 @@ class ClangdCompleter( language_server_completer.LanguageServerCompleter ):
         minimum_distance = distance
 
     return responses.BuildDisplayMessageResponse( message )
+
+
+  def _SendFlagsFromExtraConf( self, request_data ):
+    """Reads the flags from the extra conf of the given request and sends them
+    to Clangd as an entry of a compilation database using the
+    'compilationDatabaseChanges' configuration."""
+    filepath = request_data[ 'filepath' ]
+
+    with self._server_info_mutex:
+      # Replicate the logic from flags.py _GetFlagsFromCompilationDatabase:
+      #  - if there's a local extra conf, use it
+      #  - otherwise if there's no database, try and use a global extra conf
+
+      module = extra_conf_store.ModuleForSourceFile( filepath )
+      if not module:
+        # No extra conf and no global extra conf. Just let clangd handle it.
+        return
+
+      if ( extra_conf_store.IsGlobalExtraConfModule( module ) and
+           CompilationDatabaseExists( filepath ) ):
+        # No local extra conf, database exists: use database (i.e. clangd)
+        return
+
+      # Use our module (either local extra conf or global extra conf when no
+      # database is found)
+      settings = self.GetSettings( module, request_data )
+
+      if 'flags' not in settings:
+        # No flags returned. Let Clangd find the flags.
+        return
+
+      if ( settings.get( 'do_cache', True ) and
+           filepath in self._compilation_commands ):
+        # Flags for this file have already been sent to Clangd.
+        return
+
+      flags = BuildCompilationCommand( settings[ 'flags' ], filepath )
+
+      self.GetConnection().SendNotification( lsp.DidChangeConfiguration( {
+        'compilationDatabaseChanges': {
+          filepath: {
+            'compilationCommand': flags,
+            'workingDirectory': settings.get( 'include_paths_relative_to_dir',
+                                              self._project_directory )
+          }
+        }
+      } ) )
+
+      self._compilation_commands[ filepath ] = flags
+
+
+  def ExtraDebugItems( self, request_data ):
+    return [
+      responses.DebugInfoItem(
+        'Compilation Command',
+        self._compilation_commands.get( request_data[ 'filepath' ], False ) )
+    ]
+
+
+def CompilationDatabaseExists( file_dir ):
+  for folder in PathsToAllParentFolders( file_dir ):
+    if os.path.exists( os.path.join( folder, 'compile_commands.json' ) ):
+      return True
+
+  return False

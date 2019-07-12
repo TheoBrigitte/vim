@@ -35,7 +35,7 @@ from nose.tools import eq_
 from types import ModuleType
 
 from ycmd.completers.cpp import flags
-from ycmd.completers.cpp.flags import _ShouldAllowWinStyleFlags, INCLUDE_FLAGS
+from ycmd.completers.cpp.flags import ShouldAllowWinStyleFlags, INCLUDE_FLAGS
 from ycmd.tests.test_utils import ( MacOnly, TemporaryTestDir, WindowsOnly,
                                     TemporaryClangProject )
 from ycmd.utils import CLANG_RESOURCE_DIR
@@ -647,10 +647,10 @@ def FlagsForFile_Compatibility_NoKeywordArguments_test():
 
 def RemoveUnusedFlags_Passthrough_test():
   eq_( [ '-foo', '-bar' ],
-       flags._RemoveUnusedFlags( [ '-foo', '-bar' ],
-                                 'file',
-                                 _ShouldAllowWinStyleFlags(
-                                   [ '-foo', '-bar' ] ) ) )
+       flags.RemoveUnusedFlags( [ '-foo', '-bar' ],
+                                'file',
+                                ShouldAllowWinStyleFlags(
+                                  [ '-foo', '-bar' ] ) ) )
 
 
 def RemoveUnusedFlags_RemoveDashC_test():
@@ -659,22 +659,22 @@ def RemoveUnusedFlags_RemoveDashC_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( to_remove + expected,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   to_remove + expected ) ) )
+       flags.RemoveUnusedFlags( to_remove + expected,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  to_remove + expected ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags(
+       flags.RemoveUnusedFlags(
          expected[ :1 ] + to_remove + expected[ -1: ],
          filename,
-         _ShouldAllowWinStyleFlags(
+         ShouldAllowWinStyleFlags(
            expected[ :1 ] + to_remove + expected[ -1: ] ) ) )
 
 
@@ -684,22 +684,22 @@ def RemoveUnusedFlags_RemoveColor_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( to_remove + expected,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   to_remove + expected ) ) )
+       flags.RemoveUnusedFlags( to_remove + expected,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  to_remove + expected ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags(
+       flags.RemoveUnusedFlags(
          expected[ :1 ] + to_remove + expected[ -1: ],
          filename,
-         _ShouldAllowWinStyleFlags(
+         ShouldAllowWinStyleFlags(
            expected[ :1 ] + to_remove + expected[ -1: ] ) ) )
 
 
@@ -709,22 +709,22 @@ def RemoveUnusedFlags_RemoveDashO_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( to_remove + expected,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   to_remove + expected ) ) )
+       flags.RemoveUnusedFlags( to_remove + expected,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  to_remove + expected ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags(
+       flags.RemoveUnusedFlags(
          expected[ :1 ] + to_remove + expected[ -1: ],
          filename,
-         _ShouldAllowWinStyleFlags(
+         ShouldAllowWinStyleFlags(
            expected[ :1 ] + to_remove + expected[ -1: ] ) ) )
 
 
@@ -734,22 +734,22 @@ def RemoveUnusedFlags_RemoveMP_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( to_remove + expected,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   to_remove + expected ) ) )
+       flags.RemoveUnusedFlags( to_remove + expected,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  to_remove + expected ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags(
+       flags.RemoveUnusedFlags(
          expected[ :1 ] + to_remove + expected[ -1: ],
          filename,
-         _ShouldAllowWinStyleFlags(
+         ShouldAllowWinStyleFlags(
            expected[ :1 ] + to_remove + expected[ -1: ] ) ) )
 
 
@@ -759,23 +759,23 @@ def RemoveUnusedFlags_RemoveFilename_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags(
+       flags.RemoveUnusedFlags(
          expected[ :1 ] + to_remove + expected[ -1: ],
          filename,
-         _ShouldAllowWinStyleFlags(
+         ShouldAllowWinStyleFlags(
            expected[ :1 ] + to_remove + expected[ -1: ] ) ) )
 
 
@@ -785,17 +785,17 @@ def RemoveUnusedFlags_RemoveFlagWithoutPrecedingDashFlag_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
 
 @WindowsOnly
@@ -807,17 +807,17 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
   # clang-cl and --driver-mode=cl
   expected = [ 'clang-cl.exe', '-foo', '--driver-mode=cl', '-xc++', '-bar',
@@ -826,18 +826,18 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove
+                                ) ) )
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
   # clang-cl only
   expected = [ 'clang-cl.exe', '-foo', '-xc++', '-bar',
@@ -846,15 +846,15 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
 
   eq_( expected,
-      flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
                                 filename,
-                                _ShouldAllowWinStyleFlags(
+                                ShouldAllowWinStyleFlags(
                                   expected[ :1 ] + to_remove + expected[ 1: ]
                                 ) ) )
 
@@ -865,16 +865,16 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
 
   # cl only with extension
@@ -883,16 +883,16 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
   # cl path with Windows separators
   expected = [ 'path\\to\\cl', '-foo', '-xc++', '/I', 'path\\to\\include\\dir' ]
@@ -900,16 +900,16 @@ def RemoveUnusedFlags_RemoveStrayFilenames_CLDriver_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
 
 
@@ -926,16 +926,16 @@ def RemoveUnusedFlags_MultipleDriverModeFlagsWindows_test():
   filename = 'file'
 
   eq_( expected,
-       flags._RemoveUnusedFlags( expected + to_remove,
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected + to_remove ) ) )
+       flags.RemoveUnusedFlags( expected + to_remove,
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected + to_remove ) ) )
   eq_( expected,
-       flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                 filename,
-                                 _ShouldAllowWinStyleFlags(
-                                   expected[ :1 ] + to_remove + expected[ 1: ]
-                                 ) ) )
+       flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                filename,
+                                ShouldAllowWinStyleFlags(
+                                  expected[ :1 ] + to_remove + expected[ 1: ]
+                                ) ) )
 
   flags_expected = [ '/usr/bin/g++', '--driver-mode=cl', '--driver-mode=gcc' ]
   flags_all = [ '/usr/bin/g++',
@@ -945,10 +945,10 @@ def RemoveUnusedFlags_MultipleDriverModeFlagsWindows_test():
                 '--driver-mode=gcc' ]
   filename = 'file'
 
-  eq_( flags_expected, flags._RemoveUnusedFlags( flags_all,
-                                                 filename,
-                                                 _ShouldAllowWinStyleFlags(
-                                                   flags_all ) ) )
+  eq_( flags_expected, flags.RemoveUnusedFlags( flags_all,
+                                                filename,
+                                                ShouldAllowWinStyleFlags(
+                                                  flags_all ) ) )
 
 
 def RemoveUnusedFlags_Depfiles_test():
@@ -968,10 +968,10 @@ def RemoveUnusedFlags_Depfiles_test():
     '-arch', 'armv7',
   ]
 
-  assert_that( flags._RemoveUnusedFlags( full_flags,
-                                         'test.m',
-                                         _ShouldAllowWinStyleFlags(
-                                           full_flags ) ),
+  assert_that( flags.RemoveUnusedFlags( full_flags,
+                                        'test.m',
+                                        ShouldAllowWinStyleFlags(
+                                          full_flags ) ),
                contains( *expected ) )
 
 
@@ -999,25 +999,25 @@ def RemoveUnusedFlags_RemoveFilenameWithoutPrecedingInclude_test():
     expected = [ 'clang', flag, '/foo/bar', '-isystem/zoo/goo' ]
 
     eq_( expected,
-         flags._RemoveUnusedFlags( expected + to_remove,
-                                   filename,
-                                   _ShouldAllowWinStyleFlags(
-                                     expected + to_remove ) ) )
+         flags.RemoveUnusedFlags( expected + to_remove,
+                                  filename,
+                                  ShouldAllowWinStyleFlags(
+                                    expected + to_remove ) ) )
 
     eq_( expected,
-         flags._RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
-                                   filename,
-                                   _ShouldAllowWinStyleFlags(
-                                     expected[ :1 ] +
-                                     to_remove +
-                                     expected[ 1: ] ) ) )
+         flags.RemoveUnusedFlags( expected[ :1 ] + to_remove + expected[ 1: ],
+                                  filename,
+                                  ShouldAllowWinStyleFlags(
+                                    expected[ :1 ] +
+                                    to_remove +
+                                    expected[ 1: ] ) ) )
 
     eq_( expected + expected[ 1: ],
-         flags._RemoveUnusedFlags( expected + to_remove + expected[ 1: ],
-                                   filename,
-                                   _ShouldAllowWinStyleFlags(
-                                     expected + to_remove + expected[ 1: ]
-                                   ) ) )
+         flags.RemoveUnusedFlags( expected + to_remove + expected[ 1: ],
+                                  filename,
+                                  ShouldAllowWinStyleFlags(
+                                    expected + to_remove + expected[ 1: ]
+                                  ) ) )
 
   to_remove = [ '/moo/boo' ]
   filename = 'file'
@@ -1044,7 +1044,7 @@ def RemoveXclangFlags_test():
 def AddLanguageFlagWhenAppropriate_Passthrough_test():
   eq_( [ '-foo', '-bar' ],
        flags._AddLanguageFlagWhenAppropriate( [ '-foo', '-bar' ],
-                                              _ShouldAllowWinStyleFlags(
+                                              ShouldAllowWinStyleFlags(
                                                 [ '-foo', '-bar' ] ) ) )
 
 
@@ -1054,7 +1054,7 @@ def AddLanguageFlagWhenAppropriate_CLDriver_Passthrough_test():
        flags._AddLanguageFlagWhenAppropriate( [ '-foo',
                                                 '-bar',
                                                 '--driver-mode=cl' ],
-                                              _ShouldAllowWinStyleFlags(
+                                              ShouldAllowWinStyleFlags(
                                                 [ '-foo',
                                                   '-bar',
                                                   '--driver-mode=cl' ] ) ) )
@@ -1072,7 +1072,7 @@ def _AddLanguageFlagWhenAppropriateTester( compiler, language_flag = [] ):
     eq_( [ compiler ] + language_flag + expected,
          flags._AddLanguageFlagWhenAppropriate( to_remove + [ compiler ] +
                                                 expected,
-                                                _ShouldAllowWinStyleFlags(
+                                                ShouldAllowWinStyleFlags(
                                                   to_remove + [ compiler ] +
                                                   expected ) ) )
 
@@ -1160,41 +1160,38 @@ def CompilationDatabase_UseFlagsFromSameDir_test():
     with TemporaryClangProject( tmp_dir, compile_commands ):
       f = flags.Flags()
 
-      # If we now ask for a file _not_ in the DB, we get []
-      eq_(
+      # If we ask for a file that is not in the DB but is in the same directory
+      # of another file present in the DB, we get its flags.
+      assert_that(
         f.FlagsForFile(
           os.path.join( tmp_dir, 'test1.cc' ),
           add_extra_clang_flags = False ),
-        ( [], os.path.join( tmp_dir, 'test1.cc' ) ) )
+        contains(
+          contains( 'clang++',
+                    '-x',
+                    'c++',
+                    '-Wall' ),
+          os.path.join( tmp_dir, 'test1.cc' )
+        )
+      )
 
-      # Then, we ask for a file that _is_ in the db. It will cache these flags
-      # against the files' directory.
+      # If we ask for a file that is not in the DB but in a subdirectory
+      # of another file present in the DB, we get its flags.
       assert_that(
         f.FlagsForFile(
-          os.path.join( tmp_dir, 'test.cc' ),
-          add_extra_clang_flags = False )[ 0 ],
-        contains( 'clang++',
-                  '-x',
-                  'c++',
-                  '-x',
-                  'c++',
-                  '-Wall' ) )
-
-      # If we now ask for a file _not_ in the DB, but in the same dir, we should
-      # get the same flags
-      assert_that(
-        f.FlagsForFile(
-          os.path.join( tmp_dir, 'test2.cc' ),
-          add_extra_clang_flags = False )[ 0 ],
-        contains( 'clang++',
-                  '-x',
-                  'c++',
-                  '-x',
-                  'c++',
-                  '-Wall' ) )
+          os.path.join( tmp_dir, 'some_dir', 'test1.cc' ),
+          add_extra_clang_flags = False ),
+        contains(
+          contains( 'clang++',
+                    '-x',
+                    'c++',
+                    '-Wall' ),
+          os.path.join( tmp_dir, 'some_dir', 'test1.cc' )
+        )
+      )
 
 
-def CompilationDatabase_HeaderFileHeuristic_test():
+def CompilationDatabase_HeaderFile_SameNameAsSourceFile_test():
   with TemporaryTestDir() as tmp_dir:
     compile_commands = [
       {
@@ -1205,7 +1202,9 @@ def CompilationDatabase_HeaderFileHeuristic_test():
     ]
 
     with TemporaryClangProject( tmp_dir, compile_commands ):
-      # If we ask for a header file, it returns the equivalent cc file
+      # If we ask for a header file with the same name as a source file, it
+      # returns the flags of that cc file (and a special language flag for C++
+      # headers).
       assert_that(
         flags.Flags().FlagsForFile(
           os.path.join( tmp_dir, 'test.h' ),
@@ -1213,12 +1212,12 @@ def CompilationDatabase_HeaderFileHeuristic_test():
         contains( 'clang++',
                   '-x',
                   'c++',
+                  '-Wall',
                   '-x',
-                  'c++',
-                  '-Wall' ) )
+                  'c++-header' ) )
 
 
-def CompilationDatabase_HeaderFileHeuristicNotFound_test():
+def CompilationDatabase_HeaderFile_DifferentNameFromSourceFile_test():
   with TemporaryTestDir() as tmp_dir:
     compile_commands = [
       {
@@ -1229,13 +1228,19 @@ def CompilationDatabase_HeaderFileHeuristicNotFound_test():
     ]
 
     with TemporaryClangProject( tmp_dir, compile_commands ):
-      # If we ask for a header file, it returns the equivalent cc file (if and
-      # only if there are flags for that file)
-      eq_(
+      # Even if we ask for a header file with a different name than the source
+      # file, it still returns the flags from the cc file (and a special
+      # language flag for C++ headers).
+      assert_that(
         flags.Flags().FlagsForFile(
           os.path.join( tmp_dir, 'not_in_the_db.h' ),
           add_extra_clang_flags = False )[ 0 ],
-        [] )
+        contains( 'clang++',
+                  '-x',
+                  'c++',
+                  '-Wall',
+                  '-x',
+                  'c++-header' ) )
 
 
 def CompilationDatabase_ExplicitHeaderFileEntry_test():
@@ -1280,7 +1285,7 @@ def CompilationDatabase_CUDALanguageFlags_test():
       # If we ask for a header file, it returns the equivalent cu file
       assert_that(
         flags.Flags().FlagsForFile(
-          os.path.join( tmp_dir, 'test.h' ),
+          os.path.join( tmp_dir, 'test.cuh' ),
           add_extra_clang_flags = False )[ 0 ],
         contains( 'clang++',
                   '-x',

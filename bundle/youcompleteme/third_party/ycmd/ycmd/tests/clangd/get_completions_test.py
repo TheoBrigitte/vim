@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# Copyright (C) 2015-2018 ycmd contributors
+# Copyright (C) 2015-2019 ycmd contributors
 #
 # This file is part of ycmd.
 #
@@ -30,24 +30,14 @@ from nose.tools import eq_
 from hamcrest import ( assert_that, contains, contains_inanyorder, empty,
                        has_item, has_items, has_entries )
 
-from ycmd.completers.cpp.clangd_completer import ( GetVersion,
-                                                   GetClangdCommand )
-from ycmd.tests.clangd import ( IsolatedYcmd,
-                                PathToTestFile,
-                                RunAfterInitialized,
-                                SharedYcmd )
+from ycmd.tests.clangd import IsolatedYcmd, PathToTestFile, SharedYcmd
 from ycmd.tests.test_utils import ( BuildRequest,
                                     CombineRequest,
                                     CompletionEntryMatcher,
-                                    skipIf,
                                     WaitUntilCompleterServerReady,
-                                    WindowsOnly )
+                                    WindowsOnly,
+                                    WithRetry )
 from ycmd.utils import ReadFile
-from ycmd.user_options_store import DefaultOptions
-
-Clangd8Only = skipIf(
-  GetVersion( GetClangdCommand( DefaultOptions() )[ 0 ] ) == '7.0.0',
-  'Include completion is not implemented in LLVM 7.0.0' )
 
 
 def RunTest( app, test ):
@@ -98,7 +88,7 @@ def RunTest( app, test ):
   assert_that( response.json, test[ 'expect' ][ 'data' ] )
 
 
-@IsolatedYcmd( { 'clangd_uses_ycmd_caching': False } )
+@IsolatedYcmd( { 'clangd_uses_ycmd_caching': 0 } )
 def GetCompletions_ForcedWithNoTrigger_NoYcmdCaching_test( app ):
   RunTest( app, {
     'description': 'semantic completion with force query=DO_SO',
@@ -124,7 +114,7 @@ def GetCompletions_ForcedWithNoTrigger_NoYcmdCaching_test( app ):
   } )
 
 
-@IsolatedYcmd( { 'clangd_uses_ycmd_caching': False } )
+@IsolatedYcmd( { 'clangd_uses_ycmd_caching': 0 } )
 def GetCompletions_NotForced_NoYcmdCaching_test( app ):
   RunTest( app, {
     'description': 'semantic completion with force query=DO_SO',
@@ -151,6 +141,7 @@ def GetCompletions_NotForced_NoYcmdCaching_test( app ):
 
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_ForcedWithNoTrigger_test( app ):
   RunTest( app, {
@@ -200,6 +191,7 @@ def GetCompletions_Fallback_NoSuggestions_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_Fallback_NoSuggestions_MinimumCharaceters_test( app ):
   # TESTCASE1 (general_fallback/lang_cpp.cc)
@@ -224,6 +216,7 @@ def GetCompletions_Fallback_NoSuggestions_MinimumCharaceters_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_Fallback_Suggestions_test( app ):
   # TESTCASE1 (general_fallback/lang_c.c)
@@ -247,6 +240,7 @@ def GetCompletions_Fallback_Suggestions_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_Fallback_Exception_test( app ):
   # TESTCASE4 (general_fallback/lang_c.c)
@@ -273,6 +267,7 @@ def GetCompletions_Fallback_Exception_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_Forced_NoFallback_test( app ):
   # TESTCASE2 (general_fallback/lang_c.c)
@@ -292,6 +287,7 @@ def GetCompletions_Forced_NoFallback_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_FilteredNoResults_Fallback_test( app ):
   # no errors because the semantic completer returned results, but they
@@ -329,7 +325,12 @@ def GetCompletions_FilteredNoResults_Fallback_test( app ):
 
 @IsolatedYcmd( { 'auto_trigger': 0 } )
 def GetCompletions_NoCompletionsWhenAutoTriggerOff_test( app ):
-  contents = """
+  RunTest( app, {
+    'description': 'no completions on . when auto trigger is off',
+    'request': {
+      'filetype': 'cpp',
+      'filepath': PathToTestFile( 'foo.cc' ),
+      'contents': """
 struct Foo {
   int x;
   int y;
@@ -341,29 +342,29 @@ int main()
   Foo foo;
   foo.
 }
-"""
-
-  filepath = PathToTestFile( 'foo.cc' )
-  request = { 'contents': contents,
-              'filepath': filepath,
-              'filetype': 'cpp' }
-
-  test = { 'request': request }
-  results = RunAfterInitialized( app, test )
-  completion_data = BuildRequest( filepath = filepath,
-                                  filetype = 'cpp',
-                                  contents = contents,
-                                  line_num = 11,
-                                  column_num = 7 )
-
-  results = app.post_json( '/completions',
-                           completion_data ).json[ 'completions' ]
-  assert_that( results, empty() )
+""",
+      'line_num': 11,
+      'column_num': 7
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completions': empty(),
+        'errors': empty()
+      } )
+    },
+  } )
 
 
+@WithRetry
 @SharedYcmd
-def GetCompletions_ForceSemantic_OnlyFilteredCompletions_test( app ):
-  contents = """
+def GetCompletions_ForceSemantic_YcmdCache_test( app ):
+  RunTest( app, {
+    'description': 'completions are returned when using ycmd filtering',
+    'request': {
+      'filetype': 'cpp',
+      'filepath': PathToTestFile( 'foo.cc' ),
+      'contents': """
 int main()
 {
   int foobar;
@@ -373,29 +374,57 @@ int main()
 
   fooar
 }
-"""
-
-  filepath = PathToTestFile( 'foo.cc' )
-  request = { 'contents': contents,
-              'filepath': filepath,
-              'filetype': 'cpp' }
-
-  test = { 'request': request }
-  RunAfterInitialized( app, test )
-  completion_data = BuildRequest( filepath = filepath,
-                                  filetype = 'cpp',
-                                  force_semantic = True,
-                                  contents = contents,
-                                  line_num = 9,
-                                  column_num = 8 )
-
-  results = app.post_json( '/completions',
-                           completion_data ).json[ 'completions' ]
-  assert_that( results, empty() )
+""",
+      'line_num': 9,
+      'column_num': 8,
+      'force_semantic': True
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completions': contains( CompletionEntryMatcher( 'foobar' ),
+                                 CompletionEntryMatcher( 'floozar' ) ),
+        'errors': empty()
+      } )
+    },
+  } )
 
 
-@SharedYcmd
+@IsolatedYcmd( { 'clangd_uses_ycmd_caching': 0 } )
+def GetCompletions_ForceSemantic_NoYcmdCache_test( app ):
+  RunTest( app, {
+    'description': 'no completions are returned when using Clangd filtering',
+    'request': {
+      'filetype': 'cpp',
+      'filepath': PathToTestFile( 'foo.cc' ),
+      'contents': """
+int main()
+{
+  int foobar;
+  int floozar;
+  int gooboo;
+  int bleble;
+
+  fooar
+}
+""",
+      'line_num': 9,
+      'column_num': 8,
+      'force_semantic': True
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completions': empty(),
+        'errors': empty()
+      } )
+    },
+  } )
+
+
 @WindowsOnly
+@WithRetry
+@SharedYcmd
 def GetCompletions_ClangCLDriverFlag_SimpleCompletion_test( app ):
   RunTest( app, {
     'description': 'basic completion with --driver-mode=cl',
@@ -422,8 +451,9 @@ def GetCompletions_ClangCLDriverFlag_SimpleCompletion_test( app ):
   } )
 
 
-@SharedYcmd
 @WindowsOnly
+@WithRetry
+@SharedYcmd
 def GetCompletions_ClangCLDriverExec_SimpleCompletion_test( app ):
   RunTest( app, {
     'description': 'basic completion with --driver-mode=cl',
@@ -450,9 +480,9 @@ def GetCompletions_ClangCLDriverExec_SimpleCompletion_test( app ):
   } )
 
 
-@SharedYcmd
 @WindowsOnly
-@Clangd8Only
+@WithRetry
+@SharedYcmd
 def GetCompletions_ClangCLDriverFlag_IncludeStatementCandidate_test( app ):
   RunTest( app, {
     'description': 'Completion inside include statement with CL driver',
@@ -469,7 +499,7 @@ def GetCompletions_ClangCLDriverFlag_IncludeStatementCandidate_test( app ):
       'data': has_entries( {
         'completion_start_column': 11,
         'completions': contains_inanyorder(
-          CompletionEntryMatcher( 'driver_mode_cl_include.h' ),
+          CompletionEntryMatcher( 'driver_mode_cl_include.h\"' ),
         ),
         'errors': empty(),
       } )
@@ -477,9 +507,9 @@ def GetCompletions_ClangCLDriverFlag_IncludeStatementCandidate_test( app ):
   } )
 
 
-@SharedYcmd
 @WindowsOnly
-@Clangd8Only
+@WithRetry
+@SharedYcmd
 def GetCompletions_ClangCLDriverExec_IncludeStatementCandidate_test( app ):
   RunTest( app, {
     'description': 'Completion inside include statement with CL driver',
@@ -496,7 +526,7 @@ def GetCompletions_ClangCLDriverExec_IncludeStatementCandidate_test( app ):
       'data': has_entries( {
         'completion_start_column': 11,
         'completions': contains_inanyorder(
-          CompletionEntryMatcher( 'driver_mode_cl_include.h' ),
+          CompletionEntryMatcher( 'driver_mode_cl_include.h\"' ),
         ),
         'errors': empty(),
       } )
@@ -504,6 +534,7 @@ def GetCompletions_ClangCLDriverExec_IncludeStatementCandidate_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_UnicodeInLine_test( app ):
   RunTest( app, {
@@ -527,6 +558,7 @@ def GetCompletions_UnicodeInLine_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_UnicodeInLineFilter_test( app ):
   RunTest( app, {
@@ -550,8 +582,8 @@ def GetCompletions_UnicodeInLineFilter_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_QuotedInclude_test( app ):
   RunTest( app, {
     'description': 'completion of #include "',
@@ -579,8 +611,8 @@ def GetCompletions_QuotedInclude_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_QuotedInclude_AfterDirectorySeparator_test( app ):
   RunTest( app, {
     'description': 'completion of #include "quote/',
@@ -603,8 +635,8 @@ def GetCompletions_QuotedInclude_AfterDirectorySeparator_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_QuotedInclude_AfterDot_test( app ):
   RunTest( app, {
     'description': 'completion of #include "quote/b.',
@@ -628,8 +660,8 @@ def GetCompletions_QuotedInclude_AfterDot_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_QuotedInclude_AfterSpace_test( app ):
   RunTest( app, {
     'description': 'completion of #include "dir with ',
@@ -652,8 +684,8 @@ def GetCompletions_QuotedInclude_AfterSpace_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_QuotedInclude_Invalid_test( app ):
   RunTest( app, {
     'description': 'completion of an invalid include statement',
@@ -674,8 +706,8 @@ def GetCompletions_QuotedInclude_Invalid_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_BracketInclude_test( app ):
   RunTest( app, {
     'description': 'completion of #include <',
@@ -699,8 +731,8 @@ def GetCompletions_BracketInclude_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
-@Clangd8Only
 def GetCompletions_BracketInclude_AtDirectorySeparator_test( app ):
   RunTest( app, {
     'description': 'completion of #include <system/',
@@ -725,7 +757,8 @@ def GetCompletions_BracketInclude_AtDirectorySeparator_test( app ):
   } )
 
 
-@SharedYcmd
+@WithRetry
+@IsolatedYcmd()
 def GetCompletions_cuda_test( app ):
   RunTest( app, {
     'description': 'Completion of CUDA files',
@@ -775,6 +808,7 @@ def GetCompletions_WithHeaderInsertionDecorators_test( app ):
   } )
 
 
+@WithRetry
 @SharedYcmd
 def GetCompletions_ServerTriggers_Ignored_test( app ):
   RunTest( app, {
@@ -790,6 +824,64 @@ def GetCompletions_ServerTriggers_Ignored_test( app ):
       'data': has_entries( {
         'completion_start_column': 25,
         'completions': empty(),
+        'errors': empty(),
+      } )
+    }
+  } )
+
+
+@IsolatedYcmd( { 'extra_conf_globlist': [
+  PathToTestFile( 'extra_conf', '.ycm_extra_conf.py' ) ] } )
+def GetCompletions_SupportExtraConf_test( app ):
+  RunTest( app, {
+    'description': 'Flags for foo.cpp from extra conf file are used',
+    'request': {
+      'filetype'  : 'cpp',
+      'filepath'  : PathToTestFile( 'extra_conf', 'foo.cpp' ),
+      'line_num'  : 5,
+      'column_num': 15
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completion_start_column': 15,
+        'completions': contains( CompletionEntryMatcher( 'member_foo' ) ),
+        'errors': empty(),
+      } )
+    }
+  } )
+
+  RunTest( app, {
+    'description': 'Same flags are used again for foo.cpp',
+    'request': {
+      'filetype'  : 'cpp',
+      'filepath'  : PathToTestFile( 'extra_conf', 'foo.cpp' ),
+      'line_num'  : 5,
+      'column_num': 15
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completion_start_column': 15,
+        'completions': contains( CompletionEntryMatcher( 'member_foo' ) ),
+        'errors': empty(),
+      } )
+    }
+  } )
+
+  RunTest( app, {
+    'description': 'Flags for bar.cpp from extra conf file are used',
+    'request': {
+      'filetype'  : 'cpp',
+      'filepath'  : PathToTestFile( 'extra_conf', 'bar.cpp' ),
+      'line_num'  : 5,
+      'column_num': 15
+    },
+    'expect': {
+      'response': requests.codes.ok,
+      'data': has_entries( {
+        'completion_start_column': 15,
+        'completions': contains( CompletionEntryMatcher( 'member_bar' ) ),
         'errors': empty(),
       } )
     }

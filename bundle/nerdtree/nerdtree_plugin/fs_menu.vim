@@ -37,6 +37,7 @@ endif
 if g:NERDTreePath.CopyingSupported()
     call NERDTreeAddMenuItem({'text': '(c)opy the current node', 'shortcut': 'c', 'callback': 'NERDTreeCopyNode'})
 endif
+call NERDTreeAddMenuItem({'text': (has("clipboard")?'copy (p)ath to clipboard':'print (p)ath to screen'), 'shortcut': 'p', 'callback': 'NERDTreeCopyPath'})
 
 if has("unix") || has("osx")
     call NERDTreeAddMenuItem({'text': '(l)ist the current node', 'shortcut': 'l', 'callback': 'NERDTreeListNode'})
@@ -77,7 +78,7 @@ function! s:inputPrompt(action)
     endif
 
     if g:NERDTreeMenuController.isMinimal()
-        redraw! " Clear the menu
+        call nerdtree#redraw(1) " Clear the menu
         return minimal . " "
     else
         let divider = "=========================================================="
@@ -184,7 +185,7 @@ function! NERDTreeAddNode()
             call newTreeNode.putCursorHere(1, 0)
         endif
 
-        redraw!
+        call nerdtree#redraw(1)
     catch /^NERDTree/
         call nerdtree#echoWarning("Node Not Created.")
     endtry
@@ -233,7 +234,7 @@ function! NERDTreeMoveNode()
 
         call curNode.putCursorHere(1, 0)
 
-        redraw!
+        call nerdtree#redraw(1)
     catch /^NERDTree/
         call nerdtree#echoWarning("Node Not Renamed.")
     endtry
@@ -271,7 +272,7 @@ function! NERDTreeDeleteNode()
                 call s:promptToDelBuffer(bufnum, prompt)
             endif
 
-            redraw!
+            call nerdtree#redraw(1)
         catch /^NERDTree/
             call nerdtree#echoWarning("Could not remove node")
         endtry
@@ -361,7 +362,18 @@ function! NERDTreeCopyNode()
         call nerdtree#echo("Copy aborted.")
     endif
     let &shellslash = l:shellslash
-    redraw!
+    call nerdtree#redraw(1)
+endfunction
+
+" FUNCTION: NERDTreeCopyPath() {{{1
+function! NERDTreeCopyPath()
+    let l:nodePath = g:NERDTreeFileNode.GetSelected().path.str()
+    if has("clipboard")
+        let @* = l:nodePath
+        call nerdtree#echo("The path [" . l:nodePath . "] was copied to your clipboard.")
+    else
+        call nerdtree#echo("The full path is: " . l:nodePath)
+    endif
 endfunction
 
 " FUNCTION: NERDTreeQuickLook() {{{1
