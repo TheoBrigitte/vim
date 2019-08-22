@@ -3,9 +3,8 @@ filetype plugin indent on
 set t_Co=256
 let g:rehash256 = 1
 
-colorscheme OceanicNext
-"colorscheme Molokai
-"let g:molokai_original = 1
+colorscheme solarized
+set background=dark
 
 "remove | vertical line separator
 "set fillchars=""
