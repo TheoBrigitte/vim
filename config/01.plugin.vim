@@ -1,13 +1,5 @@
 " plugin manager
 
-" pathogen
-" install plugins with install.sh script
-"execute pathogen#infect()
-
-" vim8 native
-" install plugins under ~/.vim/pack/whatever/start/
-"set packpath+=~/.vim/pack/ " native vim8
-
 " vim-plug
 " install plugins with :PlugInstall
 call plug#begin('~/.vim/bundle')
