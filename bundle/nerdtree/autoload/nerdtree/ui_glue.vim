@@ -72,6 +72,7 @@ function! nerdtree#ui_glue#createDefaultBindings()
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenInTabSilent, 'scope': 'Bookmark', 'callback': s . 'openInNewTabSilent' })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenExpl, 'scope': "DirNode", 'callback': s."openExplorer" })
+    call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapOpenExpl, 'scope': "FileNode", 'callback': s."openExplorer" })
 
     call NERDTreeAddKeyMap({ 'key': g:NERDTreeMapDeleteBookmark, 'scope': "Bookmark", 'callback': s."deleteBookmark" })
 endfunction
@@ -254,7 +255,7 @@ function! s:deleteBookmark(bookmark)
 
     let l:choices = "&Yes\n&No"
 
-    echo | call nerdtree#redraw(0)
+    echo | redraw
     let l:selection = confirm(l:message, l:choices, 1, 'Warning')
 
     if l:selection != 1
@@ -266,7 +267,7 @@ function! s:deleteBookmark(bookmark)
         call a:bookmark.delete()
         silent call b:NERDTree.root.refresh()
         call b:NERDTree.render()
-        echo | call nerdtree#redraw(0)
+        echo | redraw
     catch /^NERDTree/
         call nerdtree#echoWarning('could not remove bookmark')
     endtry
@@ -574,11 +575,11 @@ function! s:refreshRoot()
     call nerdtree#echo("Refreshing the root node. This could take a while...")
 
     let l:curWin = winnr()
-    call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w")
+    call nerdtree#exec(g:NERDTree.GetWinNum() . "wincmd w", 1)
     call b:NERDTree.root.refresh()
     call b:NERDTree.render()
-    call nerdtree#redraw(0)
-    call nerdtree#exec(l:curWin . "wincmd w")
+    redraw
+    call nerdtree#exec(l:curWin . "wincmd w", 1)
     call nerdtree#echo("")
 endfunction
 

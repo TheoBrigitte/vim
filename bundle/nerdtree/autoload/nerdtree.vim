@@ -22,24 +22,8 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
-"FUNCTION: nerdtree#redraw(bang)
-" Redraws the screen (Neovim uses the mode statement). If bang is TRUE, use
-" redraw! instead of redraw.
-function! nerdtree#redraw(bang)
-    if has('nvim')
-        mode
-    else
-        if a:bang
-            redraw!
-        else
-            redraw
-        endif
-    endif
-endfunction
-
-"FUNCTION: nerdtree#slash()
-" Returns the directory separator based on OS and &shellslash
 function! nerdtree#slash()
+
     if nerdtree#runningWindows()
         if exists('+shellslash') && &shellslash
             return '/'
@@ -170,13 +154,13 @@ function! nerdtree#deprecated(func, ...)
     endif
 endfunction
 
-" FUNCTION: nerdtree#exec(cmd) {{{2
-" Same as :exec cmd but with eventignore set for the duration
-" to disable the autocommands used by NERDTree (BufEnter,
-" BufLeave and VimEnter)
-function! nerdtree#exec(cmd)
+" FUNCTION: nerdtree#exec(cmd, ignoreAll) {{{2
+" Same as :exec cmd but, if ignoreAll is TRUE, set eventignore=all for the duration
+function! nerdtree#exec(cmd, ignoreAll)
     let old_ei = &ei
-    set ei=BufEnter,BufLeave,VimEnter
+    if a:ignoreAll
+        set ei=all
+    endif
     exec a:cmd
     let &ei = old_ei
 endfunction
@@ -232,7 +216,7 @@ endfunction
 "Args:
 "msg: the message to echo
 function! nerdtree#echo(msg)
-    call nerdtree#redraw(0)
+    redraw
     echomsg empty(a:msg) ? "" : ("NERDTree: " . a:msg)
 endfunction
 

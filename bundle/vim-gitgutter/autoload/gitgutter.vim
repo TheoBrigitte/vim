@@ -25,8 +25,6 @@ function! gitgutter#process_buffer(bufnr, force) abort
 
   if gitgutter#utility#is_active(a:bufnr)
 
-    call s:setup_maps(a:bufnr)
-
     if has('patch-7.4.1559')
       let l:Callback = function('gitgutter#process_buffer', [a:bufnr, a:force])
     else
@@ -41,7 +39,7 @@ function! gitgutter#process_buffer(bufnr, force) abort
 
       let diff = ''
       try
-        let diff = gitgutter#diff#run_diff(a:bufnr, 'index', 0)
+        let diff = gitgutter#diff#run_diff(a:bufnr, g:gitgutter_diff_relative_to, 0)
       catch /gitgutter not tracked/
         call gitgutter#debug#log('Not tracked: '.gitgutter#utility#file(a:bufnr))
       catch /gitgutter diff failed/
@@ -108,12 +106,16 @@ endfunction
 
 " }}}
 
-function! s:setup_maps(bufnr)
+function! gitgutter#setup_maps()
   if !g:gitgutter_map_keys
     return
   endif
 
-  if gitgutter#utility#getbufvar(a:bufnr, 'mapped', 0)
+  " Note hasmapto() and maparg() operate on the current buffer.
+
+  let bufnr = bufnr('')
+
+  if gitgutter#utility#getbufvar(bufnr, 'mapped', 0)
     return
   endif
 
@@ -124,7 +126,10 @@ function! s:setup_maps(bufnr)
     nmap <buffer> ]c <Plug>GitGutterNextHunk
   endif
 
-  if !hasmapto('<Plug>GitGutterStageHunk') && maparg('<Leader>hs', 'n') ==# ''
+  if !hasmapto('<Plug>GitGutterStageHunk', 'v') && maparg('<Leader>hs', 'x') ==# ''
+    xmap <buffer> <Leader>hs <Plug>GitGutterStageHunk
+  endif
+  if !hasmapto('<Plug>GitGutterStageHunk', 'n') && maparg('<Leader>hs', 'n') ==# ''
     nmap <buffer> <Leader>hs <Plug>GitGutterStageHunk
   endif
   if !hasmapto('<Plug>GitGutterUndoHunk') && maparg('<Leader>hu', 'n') ==# ''
@@ -147,7 +152,7 @@ function! s:setup_maps(bufnr)
     xmap <buffer> ac <Plug>GitGutterTextObjectOuterVisual
   endif
 
-  call gitgutter#utility#setbufvar(a:bufnr, 'mapped', 1)
+  call gitgutter#utility#setbufvar(bufnr, 'mapped', 1)
 endfunction
 
 function! s:setup_path(bufnr, continuation)
@@ -170,8 +175,33 @@ endfunction
 
 function! s:clear(bufnr)
   call gitgutter#sign#clear_signs(a:bufnr)
-  call gitgutter#sign#remove_dummy_sign(a:bufnr, 1)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
   call gitgutter#utility#setbufvar(a:bufnr, 'path', '')
+endfunction
+
+
+" Note:
+" - this runs synchronously
+" - it ignores unsaved changes in buffers
+" - it does not change to the repo root
+function! gitgutter#quickfix()
+  let locations = []
+  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager '.g:gitgutter_git_args.
+        \ ' diff --no-ext-diff --no-color -U0 '.g:gitgutter_diff_args
+  let diff = systemlist(cmd)
+  let lnum = 0
+  for line in diff
+    if line =~ '^diff --git [^"]'
+      let fname = matchlist(line, '^diff --git [abciow12]/\(\S\+\) ')[1]
+    elseif line =~ '^diff --git "'
+      let fname = matchlist(line, '^diff --git "[abciow12]/\(.\+\)" ')[1]
+    elseif line =~ '^@@'
+      let lnum = matchlist(line, '+\(\d\+\)')[1]
+    elseif lnum > 0
+      call add(locations, {'filename': fname, 'lnum': lnum, 'text': line})
+      let lnum = 0
+    endif
+  endfor
+  call setqflist(locations)
 endfunction
