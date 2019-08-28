@@ -1,13 +1,16 @@
 " plugin manager
 
 " pathogen
-" use the install.sh script to install plugins
+" install plugins with install.sh script
 "execute pathogen#infect()
 
 " vim8 native
-"
+" install plugins under ~/.vim/pack/whatever/start/
 "set packpath+=~/.vim/pack/ " native vim8
-call plug#begin('~/.vim/bundle') " vim-plug
+
+" vim-plug
+" install plugins with :PlugInstall
+call plug#begin('~/.vim/bundle')
 Plug 'airblade/vim-gitgutter'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
