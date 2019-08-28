@@ -46,3 +46,8 @@ set foldmethod=syntax "enable lines folding
 set foldlevelstart=99 "do not close any fold on start
 
 set maxmempattern=1200 "fixes out of memory on large files
+
+augroup my-yaml
+  autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType yml setlocal ts=2 sts=2 sw=2 expandtab
+augroup END
