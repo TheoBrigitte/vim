@@ -46,5 +46,9 @@ cnoreabbrev Qa qa
 cnoreabbrev Qall qall
 "map ; :
 
+" open/close quickfix window
+"map \o :copen<CR>
+"map \p :cclose<CR>
+
 " reload vim config
 map \e :so ~/.vim/vimrc<CR>
