@@ -1,9 +1,6 @@
 "clean autocmd (avoid duplicate autocmd commands)
 :autocmd!
 
-"load plugins
-execute pathogen#infect()
-
 set mouse=a
 
 set number
