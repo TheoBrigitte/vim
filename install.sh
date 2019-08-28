@@ -43,7 +43,7 @@ vim configuration manager
 	-l		List installed plugins
 	-r <url>	Remove a plugin
 	-u		Update all plugins
-	-s		Skip vim-go binaries installation
+	-s		Skip extra update commands
 
 <url>	github user/repo format
 " $(basename $0)
