@@ -2,10 +2,6 @@
 
 Here is my Vim configuration aimed at Golang development.
 
-It uses [pathogen][1] as plugin manager.
-
-Here is the list of [plugins](plugins) used.
-
 ### Install
 
 #### Requirements
@@ -14,44 +10,17 @@ Here is the list of [plugins](plugins) used.
 
 #### Setup
 
-Clone this repo and run the installer:
+1. Clone this repo `git clone https://github.com/TheoBrigitte/vim ~/.vim`
+2. Run `:PlugInstall`
 
-`git clone https://github.com/TheoBrigitte/vim ~/.vim && ~/.vim/install.sh`
-
-Note: It will backup your current .vimrc file to `~/.vimrc_<date>`
+Note: remove existing `~/.vimrc`
 
 ### Plugins management
 
-Plugins are managed using the fairly small `install.sh` script.
-It does so by downloading latest plugin snapshot, in order to avoid storing
-unecessary git history.
-Plugins are stored in the `bundle` directory.
-The list of plugins is stored in the `plugins` file.
-It also uses `update.sh` for extra commands to be run on plugin update.
-Only plugin hosted on github are supported.
-
-See `$ ./install.sh -h` for help.
-
-#### Update all plugins
-
-`$ ./install.sh -u`
-
-Note: use `-s` to skip expensive additional update commands.
-
-#### Add/Update a plugin
-
-`$ ./install.sh -a scrooloose/nerdtree`
-
-#### Remove a plugin
-
-`$ ./install.sh -r scrooloose/nerdtree`
-
-### List installed plugins
-
-```
-$ ./install.sh -l
-scrooloose/nerdtree                      [installed]
-```
+* Plugins are managed by [vim-plug][1] and stored under [bundle](bundle).
+* Here is the list of used [plugins](config/01.plugin.vim).
+* See [commands][2] in vim-plug documentation for further management.
 
 
-[1]: https://github.com/tpope/vim-pathogen
+[1]: https://github.com/junegunn/vim-plug
+[2]: https://github.com/junegunn/vim-plug#commands
