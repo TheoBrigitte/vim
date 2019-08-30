@@ -80,6 +80,7 @@ let g:UltiSnipsExpandTrigger="<c-space>"
 
 " vim-gitgutter
 set updatetime=100
+set signcolumn=yes
 
 " vim-go
 autocmd VimEnter *

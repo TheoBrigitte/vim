@@ -24,7 +24,6 @@ set encoding=utf8
 set ffs=unix,dos,mac
 "set list
 set listchars=tab:›-,trail:⋅,eol:$
-set signcolumn=yes
 
 set nobackup
 set nowb
