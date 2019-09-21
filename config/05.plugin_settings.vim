@@ -19,6 +19,7 @@ let g:gutentags_cache_dir = '~/.cache/vim_gutentags'
 
 " lightline
 set noshowmode
+set laststatus=2
 let g:lightline = {
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'readonly', 'relativepath', 'modified', 'bufnum' ] ],
