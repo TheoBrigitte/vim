@@ -1,11 +1,12 @@
-nmap j gj
-nmap k gk
-
 nnoremap <silent> `<Left> :TmuxNavigateLeft<cr>
 nnoremap <silent> `<Down> :TmuxNavigateDown<cr>
 nnoremap <silent> `<Up> :TmuxNavigateUp<cr>
 nnoremap <silent> `<Right> :TmuxNavigateRight<cr>
 nnoremap <silent> `<Tab> :TmuxNavigatePrevious<cr>
+nnoremap <silent> `h :TmuxNavigateLeft<cr>
+nnoremap <silent> `j :TmuxNavigateDown<cr>
+nnoremap <silent> `k :TmuxNavigateUp<cr>
+nnoremap <silent> `l :TmuxNavigateRight<cr>
 
 "b for buffers
 map \b  :Buffers<CR>
