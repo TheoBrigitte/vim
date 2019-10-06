@@ -96,8 +96,8 @@ autocmd VimEnter *
       \| unlet s:file "set guru scope to project root directory
 let g:go_fmt_autosave = 1 "go fmt on save
 let g:go_fmt_command = "goimports" "imports rewrite on save
-let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
-let g:go_gocode_propose_source = 1 "autocomplete from source
+"let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
+"let g:go_gocode_propose_source = 1 "autocomplete from source
 let g:go_highlight_functions = 1
 let g:go_highlight_functions_arguments = 1
 let g:go_highlight_functions_calls = 1
@@ -107,7 +107,9 @@ let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 let g:go_build_tags = "k8srequired"
-let g:go_auto_type_info = 1
+"let g:go_auto_type_info = 1
+let g:go_metalinter_enabled = []
+let g:go_fmt_fail_silently = 1
 
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
@@ -115,4 +117,4 @@ let g:javascript_plugin_ngdoc = 1
 let g:javascript_plugin_flow = 1
 
 " youcompleteme
-let g:ycm_collect_identifiers_from_tags_files = 1
+"let g:ycm_collect_identifiers_from_tags_files = 1
