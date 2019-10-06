@@ -2,7 +2,7 @@ ycmd: a code-completion & comprehension server
 ==============================================
 
 [![Build status](https://dev.azure.com/YouCompleteMe/YCM/_apis/build/status/Valloric.ycmd?branchName=master)](https://dev.azure.com/YouCompleteMe/YCM/_build/latest?definitionId=2&branchName=master)
-[![Coverage status](https://img.shields.io/codecov/c/github/Valloric/ycmd/master.svg)](https://codecov.io/gh/Valloric/ycmd)
+[![Coverage status](https://img.shields.io/codecov/c/github/ycm-core/ycmd/master.svg)](https://codecov.io/gh/ycm-core/ycmd)
 
 ycmd is a server that provides APIs for code-completion and other
 code-comprehension use-cases like semantic GoTo commands (and others). For
@@ -271,13 +271,15 @@ wouldn't usually know about. The value is a list of dictionaries containing:
 - `name`: the string representing the name of the server
 - `cmdline`: the list representing the command line to execute the server
 - `filetypes`: list of supported filetypes.
+- `project_root_files`: Tells ycmd which files indicate project root.
 
 ```json
 {
   "language_server": [ {
     "name": "gopls",
     "cmdline": [ "/path/to/gopls", "-rpc.trace" ],
-    "filetypes": [ "go" ]
+    "filetypes": [ "go" ],
+    "project_root_files": [ "go.mod" ]
   } ]
 }
 ```
@@ -442,7 +444,7 @@ This software is licensed under the [GPL v3 license][gpl].
 © 2015-2019 ycmd contributors
 
 [ycmd-users]: https://groups.google.com/forum/?hl=en#!forum/ycmd-users
-[ycm]: http://valloric.github.io/YouCompleteMe/
+[ycm]: http://ycm-core.github.io/YouCompleteMe/
 [atom-you-complete-me]: https://atom.io/packages/you-complete-me
 [sublime-ycmd-completion]: https://packagecontrol.io/packages/YcmdCompletion
 [sublime-ycmd]: https://packagecontrol.io/packages/YouCompleteMe
@@ -472,7 +474,7 @@ This software is licensed under the [GPL v3 license][gpl].
 [gycm]: https://github.com/jakeanq/gycm
 [nano-ycmd]: https://github.com/orsonteodoro/nano-ycmd
 [jdtls]: https://github.com/eclipse/eclipse.jdt.ls
-[api-docs]: https://valloric.github.io/ycmd/
+[api-docs]: https://ycm-core.github.io/ycmd/
 [ycmd-extra-conf]: https://github.com/Valloric/ycmd/blob/master/.ycm_extra_conf.py
 [clangd]: https://clang.llvm.org/extra/clangd.html
 [RLS]: https://github.com/rust-lang-nursery/rls

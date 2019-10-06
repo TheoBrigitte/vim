@@ -228,10 +228,7 @@ def BuildNotification( method, parameters ):
 def BuildResponse( request, parameters ):
   """Builds a JSON RPC response message to respond to the supplied |request|
   message. |parameters| should contain either 'error' or 'result'"""
-  message = {
-    'id': request[ 'id' ],
-    'method': request[ 'method' ],
-  }
+  message = { 'id': request[ 'id' ] }
   message.update( parameters )
   return _BuildMessageData( message )
 
@@ -273,7 +270,7 @@ def Reject( request, request_error, data = None ):
   msg = {
     'error': {
       'code': request_error.code,
-      'reason': request_error.reason,
+      'message': request_error.reason,
     }
   }
   if data is not None:
@@ -501,7 +498,9 @@ def _BuildMessageData( message ):
   # NOTE: sort_keys=True is needed to workaround a 'limitation' of clangd where
   # it requires keys to be in a specific order, due to a somewhat naive
   # JSON/YAML parser.
-  data = ToBytes( json.dumps( message, sort_keys=True ) )
+  data = ToBytes( json.dumps( message,
+                              separators = ( ',', ':' ),
+                              sort_keys=True ) )
   packet = ToBytes( 'Content-Length: {0}\r\n'
                     '\r\n'.format( len( data ) ) ) + data
   return packet
