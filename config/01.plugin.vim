@@ -3,7 +3,7 @@
 " vim-plug
 " install plugins with :PlugInstall
 call plug#begin('~/.vim/bundle')
-"Plug 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'itchyny/lightline.vim'

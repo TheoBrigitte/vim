@@ -80,8 +80,8 @@ let g:tmux_navigator_disable_when_zoomed = 1
 let g:UltiSnipsExpandTrigger="<c-space>"
 
 " vim-gitgutter
-"set updatetime=100
-"set signcolumn=yes
+set updatetime=100
+set signcolumn=yes
 
 " vim-go
 autocmd VimEnter *
