@@ -16,7 +16,6 @@ Plug 'mileszs/ack.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'SirVer/ultisnips'
 Plug 'tpope/vim-fugitive'
-Plug 'valloric/youcompleteme', { 'do': './install.py --go-completer'}
 Plug 'wsdjeg/vim-fetch'
 
 Plug 'altercation/vim-colors-solarized'
