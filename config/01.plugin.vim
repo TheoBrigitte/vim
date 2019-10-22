@@ -18,6 +18,13 @@ Plug 'SirVer/ultisnips'
 Plug 'tpope/vim-fugitive'
 Plug 'wsdjeg/vim-fetch'
 
+" auto-completion
+"Plug 'valloric/youcompleteme', { 'do': './install.py --go-completer'}
+Plug 'Shougo/deoplete.nvim'
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
+
+" themes
 Plug 'altercation/vim-colors-solarized'
 "Plug 'fatih/molokai'
 "Plug 'mhartington/oceanic-next'

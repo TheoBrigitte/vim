@@ -119,3 +119,7 @@ let g:javascript_plugin_flow = 1
 " youcompleteme
 "let g:ycm_collect_identifiers_from_tags_files = 1
 "let g:ycm_enable_diagnostic_signs = 0
+
+" deoplete
+let g:deoplete#enable_at_startup = 1
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
