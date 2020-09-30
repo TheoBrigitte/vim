@@ -27,6 +27,7 @@ map \\  :nohlsearch<CR>
 map \x  :bd<CR>
 "toggle paste mode
 set pastetoggle=\\p
+map \o C<C-r>0<ESC>
 
 map Z :qa!<CR>
 
