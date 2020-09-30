@@ -126,3 +126,6 @@ let g:javascript_plugin_flow = 1
 " deoplete
 let g:deoplete#enable_at_startup = 1
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" autosave
+let g:auto_save = 1
