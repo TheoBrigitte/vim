@@ -82,6 +82,8 @@ let g:UltiSnipsExpandTrigger="<c-space>"
 " vim-gitgutter
 set updatetime=100
 set signcolumn=yes
+let g:gitgutter_map_keys = 0
+let g:gitgutter_set_sign_backgrounds = 1
 
 " vim-go
 autocmd VimEnter *

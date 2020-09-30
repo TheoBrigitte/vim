@@ -3,6 +3,7 @@ filetype plugin indent on
 
 colorscheme solarized
 set background=dark
+highlight clear SignColumn
 
 "remove | vertical line separator
 "set fillchars=""
