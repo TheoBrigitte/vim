@@ -94,6 +94,8 @@ autocmd VimEnter *
       \| unlet s:tmp s:scope
       \| endif
       \| unlet s:file "set guru scope to project root directory
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
 let g:go_fmt_autosave = 1 "go fmt on save
 let g:go_fmt_command = "goimports" "imports rewrite on save
 "let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
@@ -109,7 +111,8 @@ let g:go_highlight_operators = 1
 let g:go_build_tags = "k8srequired"
 "let g:go_auto_type_info = 1
 let g:go_metalinter_enabled = []
-let g:go_fmt_fail_silently = 1
+"let g:go_fmt_fail_silently = 1
+"let g:go_debug = ["lsp"]
 
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
