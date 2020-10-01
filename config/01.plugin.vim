@@ -26,7 +26,8 @@ Plug '907th/vim-auto-save' "auto-save files
 "Plug 'roxma/vim-hug-neovim-rpc'
 
 " themes
-Plug 'altercation/vim-colors-solarized'
+"Plug 'altercation/vim-colors-solarized'
+Plug 'chriskempson/base16-vim'
 "Plug 'fatih/molokai'
 "Plug 'mhartington/oceanic-next'
 call plug#end()

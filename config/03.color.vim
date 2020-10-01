@@ -1,8 +1,10 @@
 syntax on
 filetype plugin indent on
 
-colorscheme solarized
-set background=dark
+"colorscheme solarized
+colorscheme base16-solarized-dark
+"set background=dark
+set termguicolors
 highlight clear SignColumn
 
 "remove | vertical line separator
