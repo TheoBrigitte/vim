@@ -3,7 +3,7 @@ filetype plugin indent on
 
 "colorscheme solarized
 colorscheme base16-solarized-dark
-"set background=dark
+set background=dark
 set termguicolors
 highlight clear SignColumn
 
