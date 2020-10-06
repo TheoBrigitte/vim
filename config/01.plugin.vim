@@ -17,7 +17,6 @@ Plug 'scrooloose/nerdtree' "file navigation
 "Plug 'SirVer/ultisnips' "code snippets
 Plug 'tpope/vim-fugitive' "git integration
 Plug 'wsdjeg/vim-fetch' "open file line and column
-Plug '907th/vim-auto-save' "auto-save files
 
 " auto-completion
 "Plug 'valloric/youcompleteme', { 'do': './install.py --go-completer'}
