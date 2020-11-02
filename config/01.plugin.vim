@@ -7,6 +7,7 @@ Plug 'airblade/vim-gitgutter' "git diff column sign
 Plug 'christoomey/vim-tmux-navigator' "navigate vim & tmux panes
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } "golang tools
 Plug 'itchyny/lightline.vim' "status line
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim' "fuzzy finder (buffers, files, tags)
 Plug 'ludovicchabant/vim-gutentags' "auto-generate tags
 Plug 'majutsushi/tagbar' "display tags
