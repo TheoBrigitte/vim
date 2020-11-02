@@ -20,6 +20,13 @@ Plug 'tpope/vim-fugitive' "git integration
 Plug 'wsdjeg/vim-fetch' "open file line and column
 
 " auto-completion
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 "Plug 'valloric/youcompleteme', { 'do': './install.py --go-completer'}
 "Plug 'Shougo/deoplete.nvim'
 "Plug 'roxma/nvim-yarp'
