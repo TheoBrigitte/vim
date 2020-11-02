@@ -36,7 +36,11 @@ set backspace=eol,start,indent
 set splitright
 set splitbelow
 
-set viminfo+=n~/.vim/viminfo
+if has('nvim')
+    set viminfo+=n~/.vim/shada
+else
+    set viminfo+=n~/.vim/viminfo
+endif
 
 set foldmethod=syntax "enable lines folding
 set foldlevelstart=99 "do not close any fold on start
