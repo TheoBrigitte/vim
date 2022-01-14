@@ -141,10 +141,10 @@ let g:go_info_mode='gopls'
 let g:go_fmt_autosave = 1 "go fmt on save
 let g:go_imports_autosave = 1
 let g:go_fmt_command = "goimports" "imports rewrite on save
-autocmd FileType go let b:go_fmt_options = {
-\ 'goimports': '-local ' .
-  \ trim(system('{cd '. shellescape(expand('%:h')) .' && go list -m;}')),
-\ }
+"autocmd FileType go let b:go_fmt_options = {
+"\ 'goimports': '-local ' .
+"  \ trim(system('{cd '. shellescape(expand('%:h')) .' && go list -m;}')),
+"\ }
 "let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
 "let g:go_gocode_propose_source = 1 "autocomplete from source
 let g:go_highlight_functions = 1
@@ -160,6 +160,7 @@ let g:go_build_tags = "k8srequired"
 let g:go_metalinter_enabled = []
 "let g:go_fmt_fail_silently = 1
 "let g:go_debug = ["lsp"]
+let g:go_echo_command_info = 1
 
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
