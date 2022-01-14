@@ -21,9 +21,9 @@ Plug 'wsdjeg/vim-fetch' "open file line and column
 Plug 'mustache/vim-mustache-handlebars' "highlight mustach template
 
 " auto-completion
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
+"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"Plug 'roxma/nvim-yarp'
+"Plug 'roxma/vim-hug-neovim-rpc'
 "Plug 'valloric/youcompleteme', { 'do': './install.py --go-completer'}
 "Plug 'Shougo/deoplete.nvim'
 "Plug 'roxma/nvim-yarp'

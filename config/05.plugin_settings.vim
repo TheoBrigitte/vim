@@ -131,9 +131,9 @@ let g:javascript_plugin_flow = 1
 "let g:ycm_enable_diagnostic_signs = 0
 
 " deoplete
-let g:deoplete#enable_at_startup = 1
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
+"let g:deoplete#enable_at_startup = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+"call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
 
 " autosave
 let g:auto_save = 1
