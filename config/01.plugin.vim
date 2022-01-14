@@ -7,14 +7,14 @@ Plug 'airblade/vim-gitgutter' "git diff column sign
 Plug 'christoomey/vim-tmux-navigator' "navigate vim & tmux panes
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } "golang tools
 Plug 'itchyny/lightline.vim' "status line
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' "fuzzy finder (buffers, files, tags)
 Plug 'ludovicchabant/vim-gutentags' "auto-generate tags
-Plug 'majutsushi/tagbar' "display tags
+Plug 'preservim/tagbar' "display tags
 Plug 'mileszs/ack.vim' "grep in files
 "Plug 'mxw/vim-jsx' "reactjs syntax
 "Plug 'pangloss/vim-javascript' "javascript syntax
-Plug 'scrooloose/nerdtree' "file navigation
+Plug 'preservim/nerdtree' "file navigation
 "Plug 'SirVer/ultisnips' "code snippets
 Plug 'tpope/vim-fugitive' "git integration
 Plug 'wsdjeg/vim-fetch' "open file line and column
