@@ -177,4 +177,4 @@ let g:javascript_plugin_flow = 1
 "call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
 
 " autosave
-let g:auto_save = 1
+"let g:auto_save = 1
