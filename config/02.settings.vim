@@ -20,7 +20,7 @@ set autoindent
 set smartindent
 filetype plugin indent on
 
-set encoding=utf8
+set encoding=utf-8
 set ffs=unix,dos,mac
 "set list
 set listchars=tab:›-,trail:⋅,eol:$
