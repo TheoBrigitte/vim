@@ -42,6 +42,8 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 let g:NERDTreeMinimalUI = 1
+let g:NERDTreeShowHidden=1
+let g:NERDTreeIgnore=["\.git$"]
 
 " tagbar
 let g:tagbar_type_go = {
