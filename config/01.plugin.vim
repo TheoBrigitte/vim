@@ -9,7 +9,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } "golang tools
 Plug 'itchyny/lightline.vim' "status line
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' "fuzzy finder (buffers, files, tags)
-Plug 'ludovicchabant/vim-gutentags' "auto-generate tags
+"Plug 'ludovicchabant/vim-gutentags' "auto-generate tags
 Plug 'preservim/tagbar' "display tags
 Plug 'mileszs/ack.vim' "grep in files
 "Plug 'mxw/vim-jsx' "reactjs syntax
@@ -29,6 +29,7 @@ Plug 'mustache/vim-mustache-handlebars' "highlight mustach template
 "Plug 'roxma/nvim-yarp'
 "Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'github/copilot.vim'
 
 " themes
 "Plug 'altercation/vim-colors-solarized'
