@@ -1,7 +1,7 @@
-" ack
+"""" ack
 let g:ackprg = 'rg --vimgrep'
 
-" fzf
+"""" fzf
 set runtimepath+=/usr/bin/fzf "fzf path on linux
 set runtimepath+=/usr/local/opt/fzf "fzf path on osx
 command! -bang -nargs=* Rg
@@ -13,11 +13,11 @@ command! -bang -nargs=* Rg
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0) "files command with preview window
 
-" gutentags
+"""" gutentags
 let g:gutentags_generate_on_empty_buffer = 1
 let g:gutentags_cache_dir = '~/.cache/vim_gutentags'
 
-" lightline
+"""" lightline
 set noshowmode
 set laststatus=2
 let g:lightline = {
@@ -32,7 +32,7 @@ let g:lightline = {
       \ },
       \ }
 
-" NERDtree
+"""" NERDtree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif "open NERDTree on start
 autocmd VimEnter * wincmd l "move cursor to main window on start
@@ -45,7 +45,7 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeShowHidden=1
 let g:NERDTreeIgnore=["\.git$"]
 
-" tagbar
+"""" tagbar
 let g:tagbar_type_go = {
   \ 'ctagstype' : 'go',
   \ 'kinds'     : [
@@ -74,20 +74,20 @@ let g:tagbar_type_go = {
   \ 'ctagsargs' : '-sort -silent'
   \ }
 
-" tmux
+"""" tmux
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_disable_when_zoomed = 1
 
-" utils snips
+"""" utils snips
 let g:UltiSnipsExpandTrigger="<c-space>"
 
-" vim-gitgutter
+"""" vim-gitgutter
 set updatetime=100
 "set signcolumn=yes
 let g:gitgutter_map_keys = 0
 let g:gitgutter_set_sign_backgrounds = 1
 
-" coc
+"""" coc
 set hidden
 set nowritebackup
 set cmdheight=2
@@ -125,7 +125,7 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-" vim-go
+"""" vim-go
 autocmd VimEnter *
       \ let s:file = ""
       \| if argc() == 0 && !exists("s:std_in") | let s:file = getcwd() | elseif argc() == 1 && !exists("s:std_in") | let s:file = fnamemodify(argv()[0], ':p:h') | endif
@@ -162,19 +162,19 @@ let g:go_metalinter_enabled = []
 "let g:go_debug = ["lsp"]
 let g:go_echo_command_info = 1
 
-" vim-javascript
+"""" vim-javascript
 let g:javascript_plugin_jsdoc = 1
 let g:javascript_plugin_ngdoc = 1
 let g:javascript_plugin_flow = 1
 
-" youcompleteme
+"""" youcompleteme
 "let g:ycm_collect_identifiers_from_tags_files = 1
 "let g:ycm_enable_diagnostic_signs = 0
 
-" deoplete
+"""" deoplete
 "let g:deoplete#enable_at_startup = 1
 "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 "call deoplete#custom#option('omni_patterns', { 'go': '[^. *\t]\.\w*' })
 
-" autosave
+"""" autosave
 "let g:auto_save = 1
