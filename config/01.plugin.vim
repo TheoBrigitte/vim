@@ -19,6 +19,7 @@ Plug 'preservim/nerdtree' "file navigation
 Plug 'tpope/vim-fugitive' "git integration
 Plug 'wsdjeg/vim-fetch' "open file line and column
 Plug 'mustache/vim-mustache-handlebars' "highlight mustach template
+Plug 'rust-lang/rust.vim'
 
 " auto-completion
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }

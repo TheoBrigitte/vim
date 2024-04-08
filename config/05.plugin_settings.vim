@@ -303,3 +303,6 @@ let g:javascript_plugin_flow = 1
 
 """" autosave
 "let g:auto_save = 1
+
+"""" rust
+let g:rustfmt_autosave = 1
