@@ -10,12 +10,10 @@ Here is my Vim configuration aimed at Golang development.
 
 #### Setup
 
-1. Clone this repo `git clone https://github.com/TheoBrigitte/vim ~/.vim`
-2. Run `:PlugInstall`
-3. Run `:GoInstallBinaries`
-4. Run `:Copilot setup`
+First remove any existing `~/.vimrc` file.
 
-Note: remove existing `~/.vimrc`
+1. Clone this repo `git clone https://github.com/TheoBrigitte/vim ~/.vim`
+2. Run `vim -s install.vim`
 
 ### Plugins management
 
