@@ -6,6 +6,7 @@ colorscheme base16-solarized-dark
 set background=dark
 set termguicolors
 highlight clear SignColumn
+highlight Search gui=reverse cterm=reverse
 
 "remove | vertical line separator
 "set fillchars=""
