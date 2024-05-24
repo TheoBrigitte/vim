@@ -20,6 +20,7 @@ map \g  :Ack
 map \l  :TagbarToggle<CR>
 "r for rename
 map \r  :GoRename<CR>
+map \s  :ShellCheck!<CR>
 "n for nerdtree
 map \n  :NERDTreeToggle<CR>
 map \m  :NERDTreeFind<CR>
