@@ -264,12 +264,13 @@ autocmd VimEnter *
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
 let g:go_fmt_autosave = 1 "go fmt on save
+"let g:go_imports_mode = 'goimports'
 let g:go_imports_autosave = 1
 let g:go_fmt_command = "goimports" "imports rewrite on save
-"autocmd FileType go let b:go_fmt_options = {
-"\ 'goimports': '-local ' .
-"  \ trim(system('{cd '. shellescape(expand('%:h')) .' && go list -m;}')),
-"\ }
+autocmd FileType go let b:go_fmt_options = {
+\ 'goimports': '-local ' .
+  \ trim(system('{cd '. shellescape(expand('%:h')) .' && go list -m;}')),
+\ }
 "let g:go_gocode_propose_builtins = 1 "autocomplete go builtin
 "let g:go_gocode_propose_source = 1 "autocomplete from source
 let g:go_highlight_functions = 1
