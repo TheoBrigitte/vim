@@ -8,8 +8,17 @@ nnoremap <silent> `j :TmuxNavigateDown<cr>
 nnoremap <silent> `k :TmuxNavigateUp<cr>
 nnoremap <silent> `l :TmuxNavigateRight<cr>
 
+function! Switch_background()
+    if g:colors_name == "base16-tomorrow-night"
+        colorscheme base16-tomorrow
+    else
+        colorscheme base16-tomorrow-night
+    endif
+endfunction
+
 "b for buffers
 map \b  :Buffers<CR>
+map \c  :call Switch_background()<CR>
 "f for files
 map \f  :FZF --inline-info<CR>
 "t for tags
