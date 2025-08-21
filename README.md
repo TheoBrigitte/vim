@@ -1,11 +1,12 @@
 # Vim configuration
 
-Here is my Vim configuration aimed at Golang development.
+Here is my Vim configuration, its mainly aimed at Golang development.
 
 ### Install
 
 #### Requirements
 
+* neovim: https://neovim.io (recommended)
 * universal ctags: https://github.com/universal-ctags/ctags
 
 #### Setup
@@ -24,3 +25,7 @@ First remove any existing `~/.vimrc` file.
 
 [1]: https://github.com/junegunn/vim-plug
 [2]: https://github.com/junegunn/vim-plug#commands
+
+### Cheatsheet
+
+See [CHEATSHEET.md](CHEATSHEET.md) for a list of useful standard Vim commands.
