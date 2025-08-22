@@ -1,14 +1,14 @@
 """ Buffers
 " Switch between buffers
-map \b  :Buffers<CR>
+nnoremap <leader>b <cmd>Telescope buffers<cr>
 " Close current buffer
-map \x  :bd<CR>
+map <leader>x  :bd<CR>
 
 """" Copy / Paste
 "toggle paste mode
 "set pastetoggle=\\p
 " Replace current word with contents of clipboard
-map \o cw<C-r>0<ESC>
+map <leader>o cw<C-r>0<ESC>
 " Yank to system clipboard
 map Y "+y
 " Paste from system clipboard
@@ -16,19 +16,19 @@ map Y "+y
 
 """" Files
 " Search files
-map \f  :FZF --inline-info<CR>
+nnoremap <leader>f <cmd>Telescope find_files<cr>
 " Toggle file tree
-map \n  :NERDTreeToggle<CR>
+map <leader>n  :NERDTreeToggle<CR>
 " Find current file in file tree
-map \m  :NERDTreeFind<CR>
+map <leader>m  :NERDTreeFind<CR>
 
 """" Golang
 " Rename symbol
-map \r  :GoRename<CR>
+map <leader>r  :GoRename<CR>
 
 """" Misc
 " Reload vim config
-map \e :so ~/.vim/vimrc<CR>
+map <leader>e :so ~/.vim/vimrc<CR>
 " Because we all make typos
 cnoreabbrev W! w!
 cnoreabbrev Q! q!
@@ -40,24 +40,26 @@ cnoreabbrev Qa qa
 cnoreabbrev Qall qall
 cnoreabbrev Qall! qall!
 " open/close quickfix window
-"map \o :copen<CR>
-"map \p :cclose<CR>
+"map <leader>o :copen<CR>
+"map <leader>p :cclose<CR>
 
 """ Search
-" Search in files with Ack
-map \g  :Ack
+" Search in files
+nnoremap <leader>g <cmd>Telescope live_grep<cr>
 " Clear search highlighting
-map \\  :nohlsearch<CR>
+map <leader>\  :nohlsearch<CR>
+" Search in current file
+nnoremap <leader>] <cmd>Telescope current_buffer_fuzzy_find<cr>
 
 """" ShellCheck
 " Lint current file with ShellCheck
-map \s  :ShellCheck!<CR>
+map <leader>s  :ShellCheck!<CR>
 
 """ Tags
 " Search tags
-map \t  :Tags<CR>
+nnoremap <leader>t <cmd>Telescope tags<cr>
 " Toggle tagbar
-map \l  :TagbarToggle<CR>
+map <leader>l  :TagbarToggle<CR>
 
 """" Window management
 " Panel navigation
@@ -71,12 +73,12 @@ nnoremap <silent> `j :TmuxNavigateDown<cr>
 nnoremap <silent> `k :TmuxNavigateUp<cr>
 nnoremap <silent> `l :TmuxNavigateRight<cr>
 " Resize splits
-map \<Down> :resize -2<CR>
-map \<Up> :resize +2<CR>
-map \<Left> :vertical resize -2<CR>
-map \<Right> :vertical resize +2<CR>
+map <leader><Down> :resize -2<CR>
+map <leader><Up> :resize +2<CR>
+map <leader><Left> :vertical resize -2<CR>
+map <leader><Right> :vertical resize +2<CR>
 " Color scheme toggle (light/dark)
-map \c  :call Switch_background()<CR>
+map <leader>c  :call Switch_background()<CR>
 function! Switch_background()
     if g:colors_name == "base16-tomorrow-night"
         colorscheme base16-tomorrow
@@ -85,4 +87,4 @@ function! Switch_background()
     endif
 endfunction
 " Toggle scroll sync between windows
-"map \w  :windo set scrollbind<CR>
+"map <leader>w  :windo set scrollbind<CR>

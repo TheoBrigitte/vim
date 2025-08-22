@@ -10,8 +10,13 @@ set ruler
 set incsearch
 set ignorecase
 set smartcase
-set hlsearch
 set showcmd
+" Highlight search results only while searching
+augroup vimrc-incsearch-highlight
+  autocmd!
+  autocmd CmdlineEnter /,\? :set hlsearch
+  autocmd CmdlineLeave /,\? :set nohlsearch
+augroup END
 
 set expandtab
 set tabstop=2
@@ -24,6 +29,7 @@ set encoding=utf-8
 set ffs=unix,dos,mac
 "set list
 set listchars=tab:›-,trail:⋅,eol:$
+set signcolumn=yes
 
 set nobackup
 set nowb

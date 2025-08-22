@@ -45,6 +45,10 @@ let g:NERDTreeMinimalUI = 1
 let g:NERDTreeShowHidden=1
 let g:NERDTreeIgnore=["\.git$"]
 
+"""" nerdtree-syntax-highlight
+let g:NERDTreeLimitedSyntax = 1
+let g:NERDTreeHighlightCursorline = 0
+
 """" tagbar
 let g:tagbar_type_go = {
   \ 'ctagstype' : 'go',
@@ -287,6 +291,19 @@ let g:go_metalinter_enabled = []
 "let g:go_fmt_fail_silently = 1
 "let g:go_debug = ["lsp"]
 let g:go_echo_command_info = 1
+
+"""" telescope (nvim only)
+if has('nvim')
+lua << EOF
+require('telescope').setup{
+  defaults = {
+    scroll_strategy = 'limit',
+    layout_strategy = 'vertical',
+    layout_config = { preview_height = 0.7 }
+  }
+}
+EOF
+endif
 
 """" vim-javascript
 let g:javascript_plugin_jsdoc = 1
