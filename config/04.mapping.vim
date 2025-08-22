@@ -1,3 +1,66 @@
+""" Buffers
+" Switch between buffers
+map \b  :Buffers<CR>
+" Close current buffer
+map \x  :bd<CR>
+
+"""" Copy / Paste
+"toggle paste mode
+"set pastetoggle=\\p
+" Replace current word with contents of clipboard
+map \o cw<C-r>0<ESC>
+" Yank to system clipboard
+map Y "+y
+" Paste from system clipboard
+"map P "+p
+
+"""" Files
+" Search files
+map \f  :FZF --inline-info<CR>
+" Toggle file tree
+map \n  :NERDTreeToggle<CR>
+" Find current file in file tree
+map \m  :NERDTreeFind<CR>
+
+"""" Golang
+" Rename symbol
+map \r  :GoRename<CR>
+
+"""" Misc
+" Reload vim config
+map \e :so ~/.vim/vimrc<CR>
+" Because we all make typos
+cnoreabbrev W! w!
+cnoreabbrev Q! q!
+cnoreabbrev Wq wq
+cnoreabbrev Wa wa
+cnoreabbrev W w
+cnoreabbrev Q q
+cnoreabbrev Qa qa
+cnoreabbrev Qall qall
+cnoreabbrev Qall! qall!
+" open/close quickfix window
+"map \o :copen<CR>
+"map \p :cclose<CR>
+
+""" Search
+" Search in files with Ack
+map \g  :Ack
+" Clear search highlighting
+map \\  :nohlsearch<CR>
+
+"""" ShellCheck
+" Lint current file with ShellCheck
+map \s  :ShellCheck!<CR>
+
+""" Tags
+" Search tags
+map \t  :Tags<CR>
+" Toggle tagbar
+map \l  :TagbarToggle<CR>
+
+"""" Window management
+" Panel navigation
 nnoremap <silent> `<Left> :TmuxNavigateLeft<cr>
 nnoremap <silent> `<Down> :TmuxNavigateDown<cr>
 nnoremap <silent> `<Up> :TmuxNavigateUp<cr>
@@ -7,7 +70,13 @@ nnoremap <silent> `h :TmuxNavigateLeft<cr>
 nnoremap <silent> `j :TmuxNavigateDown<cr>
 nnoremap <silent> `k :TmuxNavigateUp<cr>
 nnoremap <silent> `l :TmuxNavigateRight<cr>
-
+" Resize splits
+map \<Down> :resize -2<CR>
+map \<Up> :resize +2<CR>
+map \<Left> :vertical resize -2<CR>
+map \<Right> :vertical resize +2<CR>
+" Color scheme toggle (light/dark)
+map \c  :call Switch_background()<CR>
 function! Switch_background()
     if g:colors_name == "base16-tomorrow-night"
         colorscheme base16-tomorrow
@@ -15,52 +84,5 @@ function! Switch_background()
         colorscheme base16-tomorrow-night
     endif
 endfunction
-
-"b for buffers
-map \b  :Buffers<CR>
-map \c  :call Switch_background()<CR>
-"f for files
-map \f  :FZF --inline-info<CR>
-"t for tags
-map \t  :Tags<CR>
-"g for grep
-map \g  :Ack 
-"l for tag list
-map \l  :TagbarToggle<CR>
-"r for rename
-map \r  :GoRename<CR>
-map \s  :ShellCheck!<CR>
-"n for nerdtree
-map \n  :NERDTreeToggle<CR>
-map \m  :NERDTreeFind<CR>
-map \\  :nohlsearch<CR>
-map \x  :bd<CR>
-"toggle paste mode
-set pastetoggle=\\p
-map \o C<C-r>0<ESC>
-
-map Z :qa!<CR>
-
-map Y "+y
-"map P "+p
-
-"" no one is really happy until you have this shortcuts
-"cnoreabbrev W! w!
-"cnoreabbrev Q! q!
-"cnoreabbrev Qall! qall!
-cnoreabbrev Wq wq
-"cnoreabbrev Wa wa
-"cnoreabbrev wQ wq
-cnoreabbrev WQ wq
-cnoreabbrev W w
-cnoreabbrev Q q
-cnoreabbrev Qa qa
-cnoreabbrev Qall qall
-"map ; :
-
-" open/close quickfix window
-"map \o :copen<CR>
-"map \p :cclose<CR>
-
-" reload vim config
-map \e :so ~/.vim/vimrc<CR>
+" Toggle scroll sync between windows
+"map \w  :windo set scrollbind<CR>
