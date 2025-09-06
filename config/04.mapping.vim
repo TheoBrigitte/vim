@@ -2,7 +2,7 @@
 " Switch between buffers
 nnoremap <leader>b <cmd>Buffers<cr>
 " Close current buffer
-map <leader>x  :bd<CR>
+nnoremap <leader>x :bp\|bd #<CR>
 
 """" Copy / Paste
 "toggle paste mode
