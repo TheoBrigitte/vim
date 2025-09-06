@@ -1,6 +1,6 @@
 """ Buffers
 " Switch between buffers
-nnoremap <leader>b <cmd>Telescope buffers<cr>
+nnoremap <leader>b <cmd>Buffers<cr>
 " Close current buffer
 map <leader>x  :bd<CR>
 
@@ -16,7 +16,7 @@ map Y "+y
 
 """" Files
 " Search files
-nnoremap <leader>f <cmd>Telescope find_files<cr>
+nnoremap <leader>f <cmd>FZF --inline-info<cr>
 " Toggle file tree
 map <leader>n  :NERDTreeToggle<CR>
 " Find current file in file tree
@@ -45,7 +45,7 @@ cnoreabbrev Qall! qall!
 
 """ Search
 " Search in files
-nnoremap <leader>g <cmd>Telescope live_grep<cr>
+nnoremap <leader>g <cmd>Rg<cr>
 " Clear search highlighting
 map <leader>\  :nohlsearch<CR>
 " Search in current file
@@ -57,7 +57,7 @@ map <leader>s  :ShellCheck!<CR>
 
 """ Tags
 " Search tags
-nnoremap <leader>t <cmd>Telescope tags<cr>
+nnoremap <leader>t <cmd>Tags<cr>
 " Toggle tagbar
 map <leader>l  :TagbarToggle<CR>
 

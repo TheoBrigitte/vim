@@ -1,18 +1,3 @@
-"""" ack
-let g:ackprg = 'rg --vimgrep'
-
-"""" fzf
-set runtimepath+=/usr/bin/fzf "fzf path on linux
-set runtimepath+=/usr/local/opt/fzf "fzf path on osx
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \   <bang>0) "use ripgrep instead of ag:
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0) "files command with preview window
-
 """" gutentags
 let g:gutentags_generate_on_empty_buffer = 1
 let g:gutentags_cache_dir = '~/.cache/vim_gutentags'
@@ -291,19 +276,6 @@ let g:go_metalinter_enabled = []
 "let g:go_fmt_fail_silently = 1
 "let g:go_debug = ["lsp"]
 let g:go_echo_command_info = 1
-
-"""" telescope (nvim only)
-if has('nvim')
-lua << EOF
-require('telescope').setup{
-  defaults = {
-    scroll_strategy = 'limit',
-    layout_strategy = 'vertical',
-    layout_config = { preview_height = 0.7 }
-  }
-}
-EOF
-endif
 
 """" vim-javascript
 let g:javascript_plugin_jsdoc = 1

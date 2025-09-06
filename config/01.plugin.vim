@@ -17,13 +17,11 @@ Plug 'wsdjeg/vim-fetch' "open file line and column
 
 " Navigation
 Plug 'preservim/nerdtree' "file navigation
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim' "fuzzy finder (buffers, files, tags)
 Plug 'ryanoasis/vim-devicons' "file icons
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'christoomey/vim-tmux-navigator' "navigate vim & tmux panes
-if has('nvim')
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
-endif
 
 " Language support
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } "golang tools
