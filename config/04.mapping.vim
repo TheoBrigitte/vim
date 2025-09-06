@@ -24,7 +24,9 @@ map <leader>m  :NERDTreeFind<CR>
 
 """" Golang
 " Rename symbol
-map <leader>r  :GoRename<CR>
+map <leader>R  :GoRename<CR>
+map <leader>r  :GoReferrers<CR>
+map <leader>c  :GoCallers<CR>
 
 """" Misc
 " Reload vim config
@@ -78,7 +80,7 @@ map <leader><Up> :resize +2<CR>
 map <leader><Left> :vertical resize -2<CR>
 map <leader><Right> :vertical resize +2<CR>
 " Color scheme toggle (light/dark)
-map <leader>c  :call Switch_background()<CR>
+map <leader>C  :call Switch_background()<CR>
 function! Switch_background()
     if g:colors_name == "base16-tomorrow-night"
         colorscheme base16-tomorrow
