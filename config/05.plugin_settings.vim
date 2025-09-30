@@ -131,3 +131,26 @@ let g:javascript_plugin_flow = 1
 
 """" rust
 let g:rustfmt_autosave = 1
+
+""" coder/claudecode
+"Toggle Claude
+nnoremap <leader>ac <cmd>ClaudeCode<cr>
+"Focus Claude
+nnoremap <leader>af <cmd>ClaudeCodeFocus<cr>
+"Resume Claude
+nnoremap <leader>ar <cmd>ClaudeCode --resume<cr>
+"Continue Claude
+nnoremap <leader>aC <cmd>ClaudeCode --continue<cr>
+"Select Claude model
+nnoremap <leader>am <cmd>ClaudeCodeSelectModel<cr>
+"Add current buffer
+nnoremap <leader>ab <cmd>ClaudeCodeAdd %<cr>
+"Send to Claude
+vnoremap <leader>as <cmd>ClaudeCodeSend<cr>
+"Add file
+nnoremap <leader>as <cmd>ClaudeCodeTreeAdd<cr>
+" Diff management
+"Accept diff
+nnoremap <leader>aa <cmd>ClaudeCodeDiffAccept<cr>
+"Deny diff
+nnoremap <leader>ad <cmd>ClaudeCodeDiffDeny<cr>

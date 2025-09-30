@@ -46,4 +46,8 @@ Plug 'chriskempson/base16-vim'
 "Plug 'fatih/molokai'
 "Plug 'mhartington/oceanic-next'
 
+" AI
+Plug 'folke/snacks.nvim'
+Plug 'coder/claudecode.nvim'
+
 call plug#end()
