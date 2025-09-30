@@ -46,4 +46,8 @@ Plug 'chriskempson/base16-vim'
 "Plug 'fatih/molokai'
 "Plug 'mhartington/oceanic-next'
 
+" AI
+Plug 'nvim-lua/plenary.nvim'
+Plug 'TheoBrigitte/claude-code.nvim', { 'branch': 'window-navigation-keymap' }
+
 call plug#end()
