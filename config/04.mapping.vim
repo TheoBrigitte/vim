@@ -3,6 +3,7 @@
 nnoremap <leader>b <cmd>Buffers<cr>
 " Close current buffer
 nnoremap <leader>x :bp\|bd #<CR>
+nmap ; :
 
 """" Copy / Paste
 "toggle paste mode
@@ -75,10 +76,11 @@ nnoremap <silent> `j :TmuxNavigateDown<cr>
 nnoremap <silent> `k :TmuxNavigateUp<cr>
 nnoremap <silent> `l :TmuxNavigateRight<cr>
 " Resize splits
-map <leader><Down> :resize -2<CR>
-map <leader><Up> :resize +2<CR>
-map <leader><Left> :vertical resize -2<CR>
-map <leader><Right> :vertical resize +2<CR>
+map <C-Down> :resize -2<CR>
+map <C-Up> :resize +2<CR>
+map <C-Left> :vertical resize -2<CR>
+map <C-Right> :vertical resize +2<CR>
+
 " Color scheme toggle (light/dark)
 map <leader>C  :call Switch_background()<CR>
 function! Switch_background()
