@@ -3,7 +3,6 @@
 nnoremap <leader>b <cmd>Buffers<cr>
 " Close current buffer
 nnoremap <leader>x :bp\|bd #<CR>
-nmap ; :
 
 """" Copy / Paste
 "toggle paste mode
@@ -13,7 +12,10 @@ map <leader>o cw<C-r>0<ESC>
 " Yank to system clipboard
 map Y "+y
 " Paste from system clipboard
-"map P "+p
+map <leader>p "+p
+
+nnoremap <leader>w :w<CR>
+nnoremap <leader>Q :quitall!<CR>
 
 """" Files
 " Search files
@@ -23,11 +25,19 @@ map <leader>n  :NERDTreeToggle<CR>
 " Find current file in file tree
 map <leader>m  :NERDTreeFind<CR>
 
+"""" Git
+nnoremap <leader>gf /^<<<<<<<CR>0zt
+nnoremap <leader>go dd/^=======<CR>d/^>>>>>>><CR>dd
+nnoremap <leader>gt d/^=======<CR>dd/^>>>>>>><CR>dd
+
+
 """" Golang
 " Rename symbol
-map <leader>R  :GoRename<CR>
-map <leader>r  :GoReferrers<CR>
-map <leader>c  :GoCallers<CR>
+nnoremap <leader>R  :GoRename<CR>
+nnoremap <leader>r  :GoReferrers<CR>
+nnoremap <leader>c  :GoCallers<CR>
+nnoremap <leader>do :GoDoc<CR>
+nnoremap <leader>db :GoDocBrowser<CR>
 
 """" Misc
 " Reload vim config
@@ -45,6 +55,7 @@ cnoreabbrev Qall! qall!
 " open/close quickfix window
 "map <leader>o :copen<CR>
 "map <leader>p :cclose<CR>
+nnoremap <leader>z :suspend!<CR>
 
 """ Search
 " Search in files
