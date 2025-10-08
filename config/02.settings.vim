@@ -60,4 +60,4 @@ augroup END
 
 " Persistent undo.
 set undofile
-set undodir=~/.vim/undo
+set undodir=~/.local/state/nvim/undo//
