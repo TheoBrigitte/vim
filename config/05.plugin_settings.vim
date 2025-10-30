@@ -18,21 +18,15 @@ let g:lightline = {
       \ }
 
 """" NERDtree
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif "open NERDTree on start
-autocmd VimEnter * wincmd l "move cursor to main window on start
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-
 let g:NERDTreeDirArrowExpandable = '▸'
 let g:NERDTreeDirArrowCollapsible = '▾'
 let g:NERDTreeMinimalUI = 1
-let g:NERDTreeShowHidden=1
+let g:NERDTreeShowHidden = 1
 let g:NERDTreeIgnore=["\.git$"]
 
 """" nerdtree-syntax-highlight
 let g:NERDTreeLimitedSyntax = 1
-let g:NERDTreeHighlightCursorline = 0
+let g:NERDTreeHighlightCursorline = 1
 
 """" tagbar
 let g:tagbar_type_go = {
