@@ -59,7 +59,10 @@ nnoremap <leader>z <cmd>suspend!<CR>
 
 """ Search
 " Search in files
-nnoremap <leader>g <cmd>Rg<cr>
+" Not starting the Rg command directly as this would run rg on the all files
+" content. Plus Rg is only run once, later filtering is done by fzf. Therefore
+" issue the first Rg command with a specific input.
+nnoremap <leader>gr :Rg<space>
 " Clear search highlighting
 map <leader>\  <cmd>nohlsearch<CR>
 " Search in current file
