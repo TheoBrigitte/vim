@@ -65,6 +65,10 @@ map <leader>\  <cmd>nohlsearch<CR>
 " Search in current file
 nnoremap <leader>] <cmd>Telescope current_buffer_fuzzy_find<cr>
 
+" Session
+" Save current session, restore with: vim -S
+nnoremap <leader>S <cmd>mksession!<cr>
+
 """" ShellCheck
 " Lint current file with ShellCheck
 map <leader>s  <cmd>ShellCheck!<CR>
