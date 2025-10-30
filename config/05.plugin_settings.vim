@@ -131,3 +131,8 @@ let g:webdevicons_enable_nerdtree = 1
 " do not show the nerdtree brackets around flags
 let g:webdevicons_conceal_nerdtree_brackets = 1
 let conceallevel=3
+
+"""" fzf.vim
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } } " use 90% of the screen for fzf window
+let g:fzf_vim = {}
+let g:fzf_vim.rg_options = '--nth 4.. --preview-window "up,75%,border-bottom,+{2}+3/3,~3"' " match file content and not path + vertical preview
