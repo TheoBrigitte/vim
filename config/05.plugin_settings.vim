@@ -125,3 +125,9 @@ let g:javascript_plugin_flow = 1
 
 """" rust
 let g:rustfmt_autosave = 1
+
+"""" webdevicons
+let g:webdevicons_enable_nerdtree = 1
+" do not show the nerdtree brackets around flags
+let g:webdevicons_conceal_nerdtree_brackets = 1
+let conceallevel=3
