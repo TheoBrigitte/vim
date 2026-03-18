@@ -13,6 +13,7 @@ map <leader>o cw<C-r>0<ESC>
 map Y "+y
 " Paste from system clipboard
 map <leader>p "+p
+map <leader>P "+P
 
 nnoremap <leader>w <cmd>w<CR>
 nnoremap <leader>Q <cmd>quitall!<CR>
